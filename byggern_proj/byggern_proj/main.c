@@ -6,12 +6,28 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdint.h>
+// #include <sam.h> // no such file?
+#define F_CPU 16000000
+#include "util/delay.h"
 
+#include "pin_util.h"
+#include "utilities.h"
+
+void init_pin_directions()
+{
+	// set PORTB PIN0 direction as output
+	DDRB = (1<<DDB0);
+}
 
 int main(void)
 {
-    /* Replace with your application code */
+    init_pin_directions();
+	
     while (1) 
     {
+		_delay_ms(10);
+		toggle_pin('B', 0);
     }
 }
