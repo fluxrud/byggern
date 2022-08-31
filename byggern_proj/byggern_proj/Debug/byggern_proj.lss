@@ -3,29 +3,29 @@ byggern_proj.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000001d6  2**0
+  0 .data         00000000  00800100  00800100  0000021e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000182  00000000  00000000  00000054  2**1
+  1 .text         000001ca  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000001d6  2**0
+  2 .comment      00000030  00000000  00000000  0000021e  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000208  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000250  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000048  00000000  00000000  00000244  2**0
+  4 .debug_aranges 00000048  00000000  00000000  0000028c  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   000007f4  00000000  00000000  0000028c  2**0
+  5 .debug_info   000007f4  00000000  00000000  000002d4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000722  00000000  00000000  00000a80  2**0
+  6 .debug_abbrev 00000722  00000000  00000000  00000ac8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000003a2  00000000  00000000  000011a2  2**0
+  7 .debug_line   000003d2  00000000  00000000  000011ea  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000058  00000000  00000000  00001544  2**2
+  8 .debug_frame  00000058  00000000  00000000  000015bc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000003b0  00000000  00000000  0000159c  2**0
+  9 .debug_str    000003b0  00000000  00000000  00001614  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000158  00000000  00000000  0000194c  2**0
+ 10 .debug_loc    00000168  00000000  00000000  000019c4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000028  00000000  00000000  00001aa4  2**0
+ 11 .debug_ranges 00000028  00000000  00000000  00001b2c  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -68,7 +68,7 @@ Disassembly of section .text:
   78:	de bf       	out	0x3e, r29	; 62
   7a:	cd bf       	out	0x3d, r28	; 61
   7c:	0e 94 47 00 	call	0x8e	; 0x8e <main>
-  80:	0c 94 bf 00 	jmp	0x17e	; 0x17e <_exit>
+  80:	0c 94 e3 00 	jmp	0x1c6	; 0x1c6 <_exit>
 
 00000084 <__bad_interrupt>:
   84:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -97,170 +97,228 @@ int main(void)
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-  92:	8f e3       	ldi	r24, 0x3F	; 63
-  94:	9c e9       	ldi	r25, 0x9C	; 156
-  96:	01 97       	sbiw	r24, 0x01	; 1
-  98:	f1 f7       	brne	.-4      	; 0x96 <main+0x8>
-  9a:	00 c0       	rjmp	.+0      	; 0x9c <main+0xe>
-  9c:	00 00       	nop
-	
+  92:	2f ef       	ldi	r18, 0xFF	; 255
+  94:	8f e7       	ldi	r24, 0x7F	; 127
+  96:	91 e0       	ldi	r25, 0x01	; 1
+  98:	21 50       	subi	r18, 0x01	; 1
+  9a:	80 40       	sbci	r24, 0x00	; 0
+  9c:	90 40       	sbci	r25, 0x00	; 0
+  9e:	e1 f7       	brne	.-8      	; 0x98 <main+0xa>
+  a0:	00 c0       	rjmp	.+0      	; 0xa2 <main+0x14>
+  a2:	00 c0       	rjmp	.+0      	; 0xa4 <main+0x16>
     while (1) 
     {
-		_delay_ms(10);
+		_delay_ms(100);
+		//i = !i;
+		//PORTB = (i<<PB0);
 		toggle_pin('B', 0);
-  9e:	60 e0       	ldi	r22, 0x00	; 0
-  a0:	82 e4       	ldi	r24, 0x42	; 66
-  a2:	0e 94 54 00 	call	0xa8	; 0xa8 <toggle_pin>
-  a6:	f5 cf       	rjmp	.-22     	; 0x92 <main+0x4>
+  a4:	60 e0       	ldi	r22, 0x00	; 0
+  a6:	82 e4       	ldi	r24, 0x42	; 66
+  a8:	0e 94 57 00 	call	0xae	; 0xae <toggle_pin>
+  ac:	f2 cf       	rjmp	.-28     	; 0x92 <main+0x4>
 
-000000a8 <toggle_pin>:
+000000ae <toggle_pin>:
 
 #include "pin_util.h"
 
 void toggle_pin(char port, uint8_t pin)
 {
-	if(pin < 7){
-  a8:	67 30       	cpi	r22, 0x07	; 7
-  aa:	08 f4       	brcc	.+2      	; 0xae <toggle_pin+0x6>
-  ac:	67 c0       	rjmp	.+206    	; 0x17c <toggle_pin+0xd4>
+	if(pin > 7){
+  ae:	68 30       	cpi	r22, 0x08	; 8
+  b0:	08 f0       	brcs	.+2      	; 0xb4 <toggle_pin+0x6>
+  b2:	88 c0       	rjmp	.+272    	; 0x1c4 <toggle_pin+0x116>
 		// too high pin number
 		return;
 	}
 	
 	switch (port)
-  ae:	82 34       	cpi	r24, 0x42	; 66
-  b0:	09 f1       	breq	.+66     	; 0xf4 <toggle_pin+0x4c>
-  b2:	18 f4       	brcc	.+6      	; 0xba <toggle_pin+0x12>
-  b4:	81 34       	cpi	r24, 0x41	; 65
-  b6:	39 f0       	breq	.+14     	; 0xc6 <toggle_pin+0x1e>
-  b8:	08 95       	ret
-  ba:	83 34       	cpi	r24, 0x43	; 67
-  bc:	91 f1       	breq	.+100    	; 0x122 <toggle_pin+0x7a>
-  be:	84 34       	cpi	r24, 0x44	; 68
-  c0:	09 f4       	brne	.+2      	; 0xc4 <toggle_pin+0x1c>
-  c2:	46 c0       	rjmp	.+140    	; 0x150 <toggle_pin+0xa8>
-  c4:	08 95       	ret
+  b4:	82 34       	cpi	r24, 0x42	; 66
+  b6:	51 f1       	breq	.+84     	; 0x10c <toggle_pin+0x5e>
+  b8:	18 f4       	brcc	.+6      	; 0xc0 <toggle_pin+0x12>
+  ba:	81 34       	cpi	r24, 0x41	; 65
+  bc:	41 f0       	breq	.+16     	; 0xce <toggle_pin+0x20>
+  be:	08 95       	ret
+  c0:	83 34       	cpi	r24, 0x43	; 67
+  c2:	09 f4       	brne	.+2      	; 0xc6 <toggle_pin+0x18>
+  c4:	42 c0       	rjmp	.+132    	; 0x14a <toggle_pin+0x9c>
+  c6:	84 34       	cpi	r24, 0x44	; 68
+  c8:	09 f4       	brne	.+2      	; 0xcc <toggle_pin+0x1e>
+  ca:	5e c0       	rjmp	.+188    	; 0x188 <toggle_pin+0xda>
+  cc:	08 95       	ret
 	{
 		unsigned char reg;
 		uint8_t pin_value;
 		case 'A':
 			reg = PINA;
-  c6:	49 b3       	in	r20, 0x19	; 25
+  ce:	89 b3       	in	r24, 0x19	; 25
+			// 0000x000
+			// 0000000x & 00000001
 			pin_value = (reg>>pin)&1;
-  c8:	24 2f       	mov	r18, r20
-  ca:	30 e0       	ldi	r19, 0x00	; 0
-  cc:	02 c0       	rjmp	.+4      	; 0xd2 <toggle_pin+0x2a>
-  ce:	35 95       	asr	r19
-  d0:	27 95       	ror	r18
-  d2:	6a 95       	dec	r22
-  d4:	e2 f7       	brpl	.-8      	; 0xce <toggle_pin+0x26>
-			set_bit(reg, ~pin_value);
-  d6:	a2 2f       	mov	r26, r18
-  d8:	a1 70       	andi	r26, 0x01	; 1
-  da:	b0 e0       	ldi	r27, 0x00	; 0
-  dc:	a0 95       	com	r26
-  de:	b0 95       	com	r27
-  e0:	81 e0       	ldi	r24, 0x01	; 1
-  e2:	90 e0       	ldi	r25, 0x00	; 0
-  e4:	02 c0       	rjmp	.+4      	; 0xea <toggle_pin+0x42>
-  e6:	88 0f       	add	r24, r24
-  e8:	99 1f       	adc	r25, r25
-  ea:	aa 95       	dec	r26
-  ec:	e2 f7       	brpl	.-8      	; 0xe6 <toggle_pin+0x3e>
-  ee:	84 2b       	or	r24, r20
+  d0:	28 2f       	mov	r18, r24
+  d2:	30 e0       	ldi	r19, 0x00	; 0
+  d4:	06 2e       	mov	r0, r22
+  d6:	02 c0       	rjmp	.+4      	; 0xdc <toggle_pin+0x2e>
+  d8:	35 95       	asr	r19
+  da:	27 95       	ror	r18
+  dc:	0a 94       	dec	r0
+  de:	e2 f7       	brpl	.-8      	; 0xd8 <toggle_pin+0x2a>
+			// reg = xxxxxxxx
+			// set_bit(reg, 2)
+			// reg = xxxxx1xx
+			if (pin_value){
+  e0:	20 ff       	sbrs	r18, 0
+  e2:	0a c0       	rjmp	.+20     	; 0xf8 <toggle_pin+0x4a>
+				clear_bit(reg, pin);
+  e4:	21 e0       	ldi	r18, 0x01	; 1
+  e6:	30 e0       	ldi	r19, 0x00	; 0
+  e8:	02 c0       	rjmp	.+4      	; 0xee <toggle_pin+0x40>
+  ea:	22 0f       	add	r18, r18
+  ec:	33 1f       	adc	r19, r19
+  ee:	6a 95       	dec	r22
+  f0:	e2 f7       	brpl	.-8      	; 0xea <toggle_pin+0x3c>
+  f2:	20 95       	com	r18
+  f4:	82 23       	and	r24, r18
+  f6:	08 c0       	rjmp	.+16     	; 0x108 <toggle_pin+0x5a>
+			} else {
+				set_bit(reg, pin);
+  f8:	21 e0       	ldi	r18, 0x01	; 1
+  fa:	30 e0       	ldi	r19, 0x00	; 0
+  fc:	02 c0       	rjmp	.+4      	; 0x102 <toggle_pin+0x54>
+  fe:	22 0f       	add	r18, r18
+ 100:	33 1f       	adc	r19, r19
+ 102:	6a 95       	dec	r22
+ 104:	e2 f7       	brpl	.-8      	; 0xfe <toggle_pin+0x50>
+ 106:	82 2b       	or	r24, r18
+			}
 			PORTA = reg;
-  f0:	8b bb       	out	0x1b, r24	; 27
+ 108:	8b bb       	out	0x1b, r24	; 27
 			break;
-  f2:	08 95       	ret
+ 10a:	08 95       	ret
 		case 'B':
 			reg = PINB;
-  f4:	46 b3       	in	r20, 0x16	; 22
+ 10c:	86 b3       	in	r24, 0x16	; 22
 			pin_value = (reg>>pin)&1;
-  f6:	24 2f       	mov	r18, r20
-  f8:	30 e0       	ldi	r19, 0x00	; 0
-  fa:	02 c0       	rjmp	.+4      	; 0x100 <toggle_pin+0x58>
-  fc:	35 95       	asr	r19
-  fe:	27 95       	ror	r18
- 100:	6a 95       	dec	r22
- 102:	e2 f7       	brpl	.-8      	; 0xfc <toggle_pin+0x54>
-			set_bit(reg, ~pin_value);
- 104:	e2 2f       	mov	r30, r18
- 106:	e1 70       	andi	r30, 0x01	; 1
- 108:	f0 e0       	ldi	r31, 0x00	; 0
- 10a:	e0 95       	com	r30
- 10c:	f0 95       	com	r31
- 10e:	81 e0       	ldi	r24, 0x01	; 1
- 110:	90 e0       	ldi	r25, 0x00	; 0
- 112:	02 c0       	rjmp	.+4      	; 0x118 <toggle_pin+0x70>
- 114:	88 0f       	add	r24, r24
- 116:	99 1f       	adc	r25, r25
- 118:	ea 95       	dec	r30
- 11a:	e2 f7       	brpl	.-8      	; 0x114 <toggle_pin+0x6c>
- 11c:	84 2b       	or	r24, r20
+ 10e:	28 2f       	mov	r18, r24
+ 110:	30 e0       	ldi	r19, 0x00	; 0
+ 112:	06 2e       	mov	r0, r22
+ 114:	02 c0       	rjmp	.+4      	; 0x11a <toggle_pin+0x6c>
+ 116:	35 95       	asr	r19
+ 118:	27 95       	ror	r18
+ 11a:	0a 94       	dec	r0
+ 11c:	e2 f7       	brpl	.-8      	; 0x116 <toggle_pin+0x68>
+			if (pin_value){
+ 11e:	20 ff       	sbrs	r18, 0
+ 120:	0a c0       	rjmp	.+20     	; 0x136 <toggle_pin+0x88>
+				clear_bit(reg, pin);
+ 122:	21 e0       	ldi	r18, 0x01	; 1
+ 124:	30 e0       	ldi	r19, 0x00	; 0
+ 126:	02 c0       	rjmp	.+4      	; 0x12c <toggle_pin+0x7e>
+ 128:	22 0f       	add	r18, r18
+ 12a:	33 1f       	adc	r19, r19
+ 12c:	6a 95       	dec	r22
+ 12e:	e2 f7       	brpl	.-8      	; 0x128 <toggle_pin+0x7a>
+ 130:	20 95       	com	r18
+ 132:	82 23       	and	r24, r18
+ 134:	08 c0       	rjmp	.+16     	; 0x146 <toggle_pin+0x98>
+			} else {
+				set_bit(reg, pin);
+ 136:	21 e0       	ldi	r18, 0x01	; 1
+ 138:	30 e0       	ldi	r19, 0x00	; 0
+ 13a:	02 c0       	rjmp	.+4      	; 0x140 <toggle_pin+0x92>
+ 13c:	22 0f       	add	r18, r18
+ 13e:	33 1f       	adc	r19, r19
+ 140:	6a 95       	dec	r22
+ 142:	e2 f7       	brpl	.-8      	; 0x13c <toggle_pin+0x8e>
+ 144:	82 2b       	or	r24, r18
+			}
 			PORTB = reg;
- 11e:	88 bb       	out	0x18, r24	; 24
+ 146:	88 bb       	out	0x18, r24	; 24
 			break;
- 120:	08 95       	ret
+ 148:	08 95       	ret
 		case 'C':
 			reg = PINC;
- 122:	73 b3       	in	r23, 0x13	; 19
+ 14a:	83 b3       	in	r24, 0x13	; 19
 			pin_value = (reg>>pin)&1;
- 124:	27 2f       	mov	r18, r23
- 126:	30 e0       	ldi	r19, 0x00	; 0
- 128:	02 c0       	rjmp	.+4      	; 0x12e <toggle_pin+0x86>
- 12a:	35 95       	asr	r19
- 12c:	27 95       	ror	r18
- 12e:	6a 95       	dec	r22
- 130:	e2 f7       	brpl	.-8      	; 0x12a <toggle_pin+0x82>
-			set_bit(reg, ~pin_value);
- 132:	42 2f       	mov	r20, r18
- 134:	41 70       	andi	r20, 0x01	; 1
- 136:	50 e0       	ldi	r21, 0x00	; 0
- 138:	40 95       	com	r20
- 13a:	50 95       	com	r21
- 13c:	81 e0       	ldi	r24, 0x01	; 1
- 13e:	90 e0       	ldi	r25, 0x00	; 0
- 140:	02 c0       	rjmp	.+4      	; 0x146 <toggle_pin+0x9e>
- 142:	88 0f       	add	r24, r24
- 144:	99 1f       	adc	r25, r25
- 146:	4a 95       	dec	r20
- 148:	e2 f7       	brpl	.-8      	; 0x142 <toggle_pin+0x9a>
- 14a:	87 2b       	or	r24, r23
+ 14c:	28 2f       	mov	r18, r24
+ 14e:	30 e0       	ldi	r19, 0x00	; 0
+ 150:	06 2e       	mov	r0, r22
+ 152:	02 c0       	rjmp	.+4      	; 0x158 <toggle_pin+0xaa>
+ 154:	35 95       	asr	r19
+ 156:	27 95       	ror	r18
+ 158:	0a 94       	dec	r0
+ 15a:	e2 f7       	brpl	.-8      	; 0x154 <toggle_pin+0xa6>
+			if (pin_value){
+ 15c:	20 ff       	sbrs	r18, 0
+ 15e:	0a c0       	rjmp	.+20     	; 0x174 <toggle_pin+0xc6>
+				clear_bit(reg, pin);
+ 160:	21 e0       	ldi	r18, 0x01	; 1
+ 162:	30 e0       	ldi	r19, 0x00	; 0
+ 164:	02 c0       	rjmp	.+4      	; 0x16a <toggle_pin+0xbc>
+ 166:	22 0f       	add	r18, r18
+ 168:	33 1f       	adc	r19, r19
+ 16a:	6a 95       	dec	r22
+ 16c:	e2 f7       	brpl	.-8      	; 0x166 <toggle_pin+0xb8>
+ 16e:	20 95       	com	r18
+ 170:	82 23       	and	r24, r18
+ 172:	08 c0       	rjmp	.+16     	; 0x184 <toggle_pin+0xd6>
+			} else {
+				set_bit(reg, pin);
+ 174:	21 e0       	ldi	r18, 0x01	; 1
+ 176:	30 e0       	ldi	r19, 0x00	; 0
+ 178:	02 c0       	rjmp	.+4      	; 0x17e <toggle_pin+0xd0>
+ 17a:	22 0f       	add	r18, r18
+ 17c:	33 1f       	adc	r19, r19
+ 17e:	6a 95       	dec	r22
+ 180:	e2 f7       	brpl	.-8      	; 0x17a <toggle_pin+0xcc>
+ 182:	82 2b       	or	r24, r18
+			}
 			PORTC = reg;
- 14c:	85 bb       	out	0x15, r24	; 21
+ 184:	85 bb       	out	0x15, r24	; 21
 			break;
- 14e:	08 95       	ret
+ 186:	08 95       	ret
 		case 'D':
 			reg = PIND;
- 150:	70 b3       	in	r23, 0x10	; 16
+ 188:	80 b3       	in	r24, 0x10	; 16
 			pin_value = (reg>>pin)&1;
- 152:	47 2f       	mov	r20, r23
- 154:	50 e0       	ldi	r21, 0x00	; 0
- 156:	02 c0       	rjmp	.+4      	; 0x15c <toggle_pin+0xb4>
- 158:	55 95       	asr	r21
- 15a:	47 95       	ror	r20
- 15c:	6a 95       	dec	r22
- 15e:	e2 f7       	brpl	.-8      	; 0x158 <toggle_pin+0xb0>
-			set_bit(reg, ~pin_value);
- 160:	24 2f       	mov	r18, r20
- 162:	21 70       	andi	r18, 0x01	; 1
- 164:	30 e0       	ldi	r19, 0x00	; 0
- 166:	20 95       	com	r18
- 168:	30 95       	com	r19
- 16a:	81 e0       	ldi	r24, 0x01	; 1
- 16c:	90 e0       	ldi	r25, 0x00	; 0
- 16e:	02 c0       	rjmp	.+4      	; 0x174 <toggle_pin+0xcc>
- 170:	88 0f       	add	r24, r24
- 172:	99 1f       	adc	r25, r25
- 174:	2a 95       	dec	r18
- 176:	e2 f7       	brpl	.-8      	; 0x170 <toggle_pin+0xc8>
- 178:	87 2b       	or	r24, r23
+ 18a:	28 2f       	mov	r18, r24
+ 18c:	30 e0       	ldi	r19, 0x00	; 0
+ 18e:	06 2e       	mov	r0, r22
+ 190:	02 c0       	rjmp	.+4      	; 0x196 <toggle_pin+0xe8>
+ 192:	35 95       	asr	r19
+ 194:	27 95       	ror	r18
+ 196:	0a 94       	dec	r0
+ 198:	e2 f7       	brpl	.-8      	; 0x192 <toggle_pin+0xe4>
+			if (pin_value){
+ 19a:	20 ff       	sbrs	r18, 0
+ 19c:	0a c0       	rjmp	.+20     	; 0x1b2 <toggle_pin+0x104>
+				clear_bit(reg, pin);
+ 19e:	21 e0       	ldi	r18, 0x01	; 1
+ 1a0:	30 e0       	ldi	r19, 0x00	; 0
+ 1a2:	02 c0       	rjmp	.+4      	; 0x1a8 <toggle_pin+0xfa>
+ 1a4:	22 0f       	add	r18, r18
+ 1a6:	33 1f       	adc	r19, r19
+ 1a8:	6a 95       	dec	r22
+ 1aa:	e2 f7       	brpl	.-8      	; 0x1a4 <toggle_pin+0xf6>
+ 1ac:	20 95       	com	r18
+ 1ae:	82 23       	and	r24, r18
+ 1b0:	08 c0       	rjmp	.+16     	; 0x1c2 <toggle_pin+0x114>
+			} else {
+				set_bit(reg, pin);
+ 1b2:	21 e0       	ldi	r18, 0x01	; 1
+ 1b4:	30 e0       	ldi	r19, 0x00	; 0
+ 1b6:	02 c0       	rjmp	.+4      	; 0x1bc <toggle_pin+0x10e>
+ 1b8:	22 0f       	add	r18, r18
+ 1ba:	33 1f       	adc	r19, r19
+ 1bc:	6a 95       	dec	r22
+ 1be:	e2 f7       	brpl	.-8      	; 0x1b8 <toggle_pin+0x10a>
+ 1c0:	82 2b       	or	r24, r18
+			}
 			PORTD = reg;
- 17a:	82 bb       	out	0x12, r24	; 18
- 17c:	08 95       	ret
+ 1c2:	82 bb       	out	0x12, r24	; 18
+ 1c4:	08 95       	ret
 
-0000017e <_exit>:
- 17e:	f8 94       	cli
+000001c6 <_exit>:
+ 1c6:	f8 94       	cli
 
-00000180 <__stop_program>:
- 180:	ff cf       	rjmp	.-2      	; 0x180 <__stop_program>
+000001c8 <__stop_program>:
+ 1c8:	ff cf       	rjmp	.-2      	; 0x1c8 <__stop_program>

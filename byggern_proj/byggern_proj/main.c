@@ -9,7 +9,7 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 // #include <sam.h> // no such file?
-#define F_CPU 16000000
+#define F_CPU 4915200
 #include "util/delay.h"
 
 #include "pin_util.h"
@@ -27,7 +27,7 @@ int main(void)
 	
     while (1) 
     {
-		_delay_ms(10);
+		_delay_ms(100);
 		toggle_pin('B', 0);
     }
 }
