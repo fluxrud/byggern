@@ -31,7 +31,7 @@ int main(void)
 		
     while (1) 
     {
-		_delay_ms(100);
+		_delay_ms(1000);
 		//USART_Transmit('a');
 		//c = USART_Receive();
 		//if(c == 'w')
@@ -39,6 +39,8 @@ int main(void)
 		//	toggle_pin('B', 0);
 		//}
 		//test_usart();
-		printf("hello world\n\r");
+		printf("hello world\n\n\r");
+		printf("This is a value: %d\n\r", 13);
+		printf("This is a float: %f\n\r", 0.314);
     }
 }
