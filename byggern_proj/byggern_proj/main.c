@@ -11,9 +11,11 @@
 // #include <sam.h> // no such file?
 #define F_CPU 4915200
 #include "util/delay.h"
+#include <stdio.h>
 
 #include "pin_util.h"
 #include "utilities.h"
+#include "uart_driver.h"
 
 void init_pin_directions()
 {
@@ -24,10 +26,19 @@ void init_pin_directions()
 int main(void)
 {
     init_pin_directions();
-	
+	USART_Init(MYUBRR);
+	fdevopen(USART_Transmit, USART_Receive);
+		
     while (1) 
     {
 		_delay_ms(100);
-		toggle_pin('B', 0);
+		//USART_Transmit('a');
+		//c = USART_Receive();
+		//if(c == 'w')
+		//{
+		//	toggle_pin('B', 0);
+		//}
+		//test_usart();
+		printf("hello world\n\r");
     }
 }
