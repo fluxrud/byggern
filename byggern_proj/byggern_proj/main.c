@@ -42,20 +42,24 @@ int main(void)
 	USART_Init(MYUBRR);
 	// todo: change transmit and receive to int return, error handling?
 	fdevopen(USART_Transmit, USART_Receive);
-		
-		
+	
 	SRAM_test();
     while (1) 
     {
-		_delay_ms(1000);
-		//USART_Transmit('a');
+		
+		_delay_ms(100);
+		toggle_pin('B', 0);
+		//volatile char *reg = (char *) 0x1FFF;
+		//*reg = 0x00;
+		//printf("Base content: 0x%x\n\r", *reg);
+		//USART_Transmit('a');s
 		//c = USART_Receive();
 		//if(c == 'w')
 		//{
 		//	toggle_pin('B', 0);
 		//}
 		//test_usart();
-		printf("hello world\n\n\r");
+		//printf("hello world\n\n\r");
 		//printf("This is a value: %d\n\r", 13);
 		//printf("This is a float: %f\n\r", 0.314);
     }
