@@ -19,6 +19,11 @@ OLED_DATA	0x1200 - 0x13FF		(0.5kB)
 ADC			0x1400 - 0x17FF		(1kB)
 SRAM		0x1800 - 0x1FFF		(2kB)
 
+Unique bits [8...11]
+OLED_CMD:	0b000X => CS = not A and not B	Wolfram to NAND => CS = not (not A nand not B)
+OLED_DATA:	0b001X
+ADC:		0b01XX => CS = not A and B		Wolfram to NAND => CS = not (not A nand B)
+SRAM:		0b1XXX => CS = A and B			Wolfram to NAND => CS = A
 
 SRAM base address 0x1800
 
