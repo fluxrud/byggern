@@ -17,6 +17,9 @@
 #include "utilities.h"
 #include "uart_driver.h"
 #include "pwm_gen.h"
+#include "adc.h"
+#include "joystick.h"
+#include "slider.h"
 
 void init_pin_directions()
 {
@@ -40,18 +43,25 @@ int main(void)
 {
     init_pin_directions();
 	init_ext_mem();
+	init_pwm();
 	USART_Init(MYUBRR);
+	init_adc();
+	
 	// todo: change transmit and receive to int return, error handling?
 	fdevopen(USART_Transmit, USART_Receive);
-	
-	init_pwm();
 	
 	SRAM_test();
     while (1) 
     {
-		
-		_delay_ms(100);
+		// clear screen
+		//printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		printf("\n\r-- LOOP --\n\r");
 		toggle_pin('B', 0);
+		printf("Joystick direction: %s\n\r", joystick_direction_to_string(get_joystick_direction()));
+		printf("Slider right position: %d \n\r", get_slider_right_analog());
+		printf("Slider left position: %d \n\r", get_slider_left_analog());
+		printf("");
+		_delay_ms(10);
 		//volatile char *reg = (char *) 0x1FFF;
 		//*reg = 0x00;
 		//printf("Base content: 0x%x\n\r", *reg);
