@@ -16,11 +16,12 @@
 #include "pin_util.h"
 #include "utilities.h"
 #include "uart_driver.h"
+#include "pwm_gen.h"
 
 void init_pin_directions()
 {
 	// set PORTB PIN0 direction as output
-	DDRB = (1<<DDB0);
+	set_bit(DDRB, DDB0);
 }
 
 void init_ext_mem()
@@ -42,6 +43,8 @@ int main(void)
 	USART_Init(MYUBRR);
 	// todo: change transmit and receive to int return, error handling?
 	fdevopen(USART_Transmit, USART_Receive);
+	
+	init_pwm();
 	
 	SRAM_test();
     while (1) 
