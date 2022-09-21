@@ -36,7 +36,7 @@ struct joystick_analog get_joystick_analog()
 	out.x = a.c1;
 	out.y = a.c0;
 	
-	printf("[ %d, %d]", out.x, out.y);
+	//printf("[ %d, %d]", out.x, out.y);
 	
 	return out;
 }

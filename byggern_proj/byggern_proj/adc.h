@@ -25,10 +25,10 @@ struct adc_t read_adc()
 
 	struct adc_t out;
 	// read	?delay between reads?
-	out.c0 = ext_adc[0];
-	out.c1 = ext_adc[1];
-	out.c2 = ext_adc[2];
-	out.c3 = ext_adc[3];
+	out.c0 = ext_adc[0]; // y joystick
+	out.c1 = ext_adc[1]; // x joystick
+	out.c2 = ext_adc[2]; // r slider
+	out.c3 = ext_adc[3]; // l slider
 	
 	return out;
 }

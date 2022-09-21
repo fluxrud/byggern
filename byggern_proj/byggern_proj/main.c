@@ -20,6 +20,10 @@
 #include "adc.h"
 #include "joystick.h"
 #include "slider.h"
+#include "oled.h"
+
+#include "fonts.h"
+#include "oled_menu.h"
 
 void init_pin_directions()
 {
@@ -38,6 +42,9 @@ void init_ext_mem()
 }
 
 void SRAM_test(void);
+void display_adc_info();
+
+void test_static_address();
 
 int main(void)
 {
@@ -46,34 +53,58 @@ int main(void)
 	init_pwm();
 	USART_Init(MYUBRR);
 	init_adc();
+	init_oled();
 	
 	// todo: change transmit and receive to int return, error handling?
 	fdevopen(USART_Transmit, USART_Receive);
+	// todo: FDEV_SETUP_STREAM to utilize multi output printf
+	//fdevopen(oled_write_char, USART_Receive);
 	
-	SRAM_test();
+	// test functions
+	//test_static_address();
+	//SRAM_test();
+	
+	oled_fill_entire(0x00);
+	//oled_goto_page(0);
+	//printf("\n\r arrow = ");
+	//oled_draw_arrow();
+	
     while (1) 
     {
-		// clear screen
-		//printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-		printf("\n\r-- LOOP --\n\r");
+		oled_render();
+		//printf("\n\r-- LOOP --\n\r");
 		toggle_pin('B', 0);
-		printf("Joystick direction: %s\n\r", joystick_direction_to_string(get_joystick_direction()));
-		printf("Slider right position: %d \n\r", get_slider_right_analog());
-		printf("Slider left position: %d \n\r", get_slider_left_analog());
-		printf("");
-		_delay_ms(10);
-		//volatile char *reg = (char *) 0x1FFF;
-		//*reg = 0x00;
-		//printf("Base content: 0x%x\n\r", *reg);
-		//USART_Transmit('a');s
-		//c = USART_Receive();
-		//if(c == 'w')
-		//{
-		//	toggle_pin('B', 0);
-		//}
-		//test_usart();
-		//printf("hello world\n\n\r");
-		//printf("This is a value: %d\n\r", 13);
-		//printf("This is a float: %f\n\r", 0.314);
+		//oled_write_char((unsigned char)'a', 8);
+		//oled_fill_entire();
+		display_adc_info();
+		_delay_ms(100);
+		//printf("abcdefg");
+		oled_menu_display();
     }
+}
+
+
+void display_adc_info()
+{
+	printf("Joystick: %s        \n\r", joystick_direction_to_string(get_joystick_direction()));
+	printf("Slider right: %d    \n\r", get_slider_right_analog());
+	printf("Slider left: %d     \n\r", get_slider_left_analog());
+}
+
+void test_static_address(){
+	
+	printf("Static address test\n\r");
+	
+	// set pin direction (a 0-3)
+	set_bit(DDRC, DDC0);
+	set_bit(DDRC, DDC1);
+	set_bit(DDRC, DDC2);
+	set_bit(DDRC, DDC3);
+		
+	uint8_t reg = PINC;
+	clear_bit(reg, PINC0);
+	clear_bit(reg, PINC1);
+	clear_bit(reg, PINC2);
+	clear_bit(reg, PINC3);
+	PORTC = reg;
 }

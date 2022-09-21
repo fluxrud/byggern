@@ -6,6 +6,8 @@ address_decoder.c
 
 main.c
 
+oled.c
+
 pin_util.c
 
 sram_test.c
