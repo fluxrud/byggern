@@ -49,7 +49,6 @@ void oled_menu_display()
 		oled_write_string_on_line(s, strlen(s), i);
 	}
 	draw_selected_arrow(sel_item);
-	printf("\n\rsel %d", sel_item);
 }
 
 void oled_menu_scroll_up(){

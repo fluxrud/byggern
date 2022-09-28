@@ -25,6 +25,10 @@
 #include "fonts.h"
 #include "oled_menu.h"
 
+#include "mcp2515.h"
+
+#include "joystick_button.h"
+
 void init_pin_directions()
 {
 	// set PORTB PIN0 direction as output
@@ -55,6 +59,11 @@ int main(void)
 	init_adc();
 	init_oled();
 	
+	init_interrupt();
+	
+	SPI_MasterInit();
+	mcp2515_reset();
+	
 	// todo: change transmit and receive to int return, error handling?
 	fdevopen(USART_Transmit, USART_Receive);
 	// todo: FDEV_SETUP_STREAM to utilize multi output printf
@@ -69,16 +78,20 @@ int main(void)
 	//printf("\n\r arrow = ");
 	//oled_draw_arrow();
 	
-	oled_write_string_on_line("string test", strlen("string test"), 0);
+	//oled_write_string_on_line("string test", strlen("string test"), 0);
+	
+	//mcp2515_write(0x0F, 0xF0);
+	//mcp2515_bit_mod(0x0F, 0xFF, 0xFF);
 	
     while (1) 
     {
+		printf("\n\r%2x", mcp2515_read(0x0e));
 		oled_render();
 		//printf("\n\r-- LOOP --\n\r");
 		toggle_pin('B', 0);
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
-		//display_adc_info();
+		display_adc_info();
 		_delay_ms(100);
 		oled_menu_display();
 		if (get_joystick_direction() == DOWN)	oled_menu_sel_down();

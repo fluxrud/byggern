@@ -1,5 +1,5 @@
 /*
- * Joystick_button.h
+ * joystick_button.h
  *
  * Created: 28.09.2022 13:16:16
  *  Author: Anders
@@ -24,11 +24,6 @@ void init_interrupt(){
 	set_bit(GIFR, 5);		//clear interrupt flagg by writing a logic one to it
 	set_bit(GICR, 5);		//set the INT2 bit in GICR to enable interrupts
 	sei();					//set the I-bit in SREG (Global interrupt enable)
-	};
+};
 	
-
-
-
-
-
 #endif /* JOYSTICK_BUTTON_H_ */
