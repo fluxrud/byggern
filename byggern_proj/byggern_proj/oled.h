@@ -14,9 +14,14 @@
 
 
 void init_oled();
+void oled_write(unsigned char c);
 void oled_fill_entire(unsigned char c);
 
-// oled navigation
+// oled low level navigation
+void oled_goto_page_direct(uint8_t p);
+void oled_goto_col_direct(uint8_t col);
+
+// oled buffer navigation
 void oled_goto_page(uint8_t p);
 void oled_goto_col(uint8_t col);
 

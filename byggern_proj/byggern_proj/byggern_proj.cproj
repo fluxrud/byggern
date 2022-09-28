@@ -157,7 +157,13 @@
     <Compile Include="oled.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="oled_menu.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="oled_menu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="oled_shapes.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="pin_util.c">

@@ -64,10 +64,12 @@ int main(void)
 	//test_static_address();
 	//SRAM_test();
 	
-	oled_fill_entire(0x00);
-	//oled_goto_page(0);
+	oled_fill_entire(0x0F);
+	// oled_goto_page(0);
 	//printf("\n\r arrow = ");
 	//oled_draw_arrow();
+	
+	oled_write_string_on_line("string test", strlen("string test"), 0);
 	
     while (1) 
     {
@@ -76,13 +78,17 @@ int main(void)
 		toggle_pin('B', 0);
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
-		display_adc_info();
+		//display_adc_info();
 		_delay_ms(100);
-		//printf("abcdefg");
 		oled_menu_display();
+		if (get_joystick_direction() == DOWN)	oled_menu_sel_down();
+		if (get_joystick_direction() == UP)		oled_menu_sel_up();
     }
 }
 
+
+
+/* test functions */
 
 void display_adc_info()
 {

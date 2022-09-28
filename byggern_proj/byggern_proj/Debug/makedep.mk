@@ -8,6 +8,8 @@ main.c
 
 oled.c
 
+oled_menu.c
+
 pin_util.c
 
 sram_test.c
