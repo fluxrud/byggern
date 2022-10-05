@@ -27,7 +27,7 @@ void SPI_MasterInit(void)
 	clear_bit(DDR_SPI, DD_MISO);
 	/* Enable SPI, Master, set clock rate fck/16 */
 	SPI_clear_slave_select();
-	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR1)|(1<<SPR0);
+	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR1)|(1<<SPR0); // |(1<<SPR1)
 	
 	SPI_clear_slave_select();
 }

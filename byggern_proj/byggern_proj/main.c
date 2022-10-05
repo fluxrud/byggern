@@ -26,6 +26,7 @@
 #include "oled_menu.h"
 
 #include "mcp2515.h"
+#include "can.h"
 
 #include "joystick_button.h"
 
@@ -33,6 +34,11 @@ void init_pin_directions()
 {
 	// set PORTB PIN0 direction as output
 	set_bit(DDRB, DDB0);
+	// mcp transistor
+	set_bit(DDRB, DDB1);
+	char reg = PINB;
+	set_bit(reg, DDB1);
+	PORTB = reg;
 }
 
 void init_ext_mem()
@@ -58,8 +64,11 @@ int main(void)
 	USART_Init(MYUBRR);
 	init_adc();
 	init_oled();
+	//init_can();
 	
-	init_interrupt();
+	//init_interrupt();
+	
+	
 	
 	SPI_MasterInit();
 	mcp2515_reset();
@@ -78,24 +87,46 @@ int main(void)
 	//printf("\n\r arrow = ");
 	//oled_draw_arrow();
 	
+	_delay_ms(10000);
+	toggle_pin('B', 1);
+	//_delay_ms(2000);
+	//toggle_pin('B', 1);
+	
 	//oled_write_string_on_line("string test", strlen("string test"), 0);
 	
 	//mcp2515_write(0x0F, 0xF0);
 	//mcp2515_bit_mod(0x0F, 0xFF, 0xFF);
 	
+	//mcp2515_reset();
+	//_delay_ms(1000);
+	
+	
+	init_can();
+	
     while (1) 
     {
-		printf("\n\r%2x", mcp2515_read(0x0e));
-		oled_render();
+		/* TEST */
 		//printf("\n\r-- LOOP --\n\r");
-		toggle_pin('B', 0);
+		//mcp2515_reset();
+		can_set_config_mode(MODE_LOOPBACK);
+		mcp2515_read(0x0e);
+		can_transmit();
+		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
-		display_adc_info();
+		//display_adc_info(); // using printf
+		
+		/* OLED MENU */
+		//oled_menu_display();
+		//if (get_joystick_direction() == DOWN)	oled_menu_sel_down();
+		//if (get_joystick_direction() == UP)		oled_menu_sel_up();
+		
+		/* OLED RENDER */
+		//oled_render();
+		
+		/* LOOP PERIOD AND LED */
+		toggle_pin('B', 0);
 		_delay_ms(100);
-		oled_menu_display();
-		if (get_joystick_direction() == DOWN)	oled_menu_sel_down();
-		if (get_joystick_direction() == UP)		oled_menu_sel_up();
     }
 }
 

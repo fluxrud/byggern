@@ -161,8 +161,6 @@ char mcp2515_read(char adr)
 {
 	SPI_set_slave_select();
 	//_delay_us(10);
-	// char read_instruction = 0b00000011;
-	// SPI_MasterTransmit(read_instruction);
 	SPI_MasterTransmit(MCP_READ);
 	SPI_MasterTransmit(adr);
 	char d = SPI_MasterTrancieve(0x0f);
@@ -173,8 +171,6 @@ char mcp2515_read(char adr)
 void mcp2515_write(char adr, char data)
 {
 	SPI_set_slave_select();
-	// char write_instruction = 0b00000010;
-	// SPI_MasterTransmit(write_instruction);
 	SPI_MasterTransmit(MCP_WRITE);
 	SPI_MasterTransmit(adr);
 	SPI_MasterTransmit(data); // todo: support array read
@@ -193,8 +189,6 @@ void mcp2515_send_req(char req)
 char mcp2515_read_status()
 {
 	SPI_set_slave_select();
-	// char read_status_instruction = 0b10100000;
-	// SPI_MasterTransmit(read_status_instruction);
 	SPI_MasterTransmit(MCP_READ_STATUS);
 	char d = SPI_MasterTrancieve(0x00);
 	SPI_clear_slave_select();
@@ -204,8 +198,6 @@ char mcp2515_read_status()
 void mcp2515_bit_mod(char adr, char bit_mask, char data)
 {
 	SPI_set_slave_select();
-	// char bit_mod_instruction = 0b00000101;
-	// SPI_MasterTransmit(bit_mod_instruction);
 	SPI_MasterTransmit(MCP_BITMOD);
 	SPI_MasterTransmit(adr);
 	SPI_MasterTransmit(bit_mask);
@@ -215,9 +207,11 @@ void mcp2515_bit_mod(char adr, char bit_mask, char data)
 
 void mcp2515_reset()
 {
+	//toggle_pin('B', 1);
+	//_delay_ms(1);
+	//toggle_pin('B', 1);
+	
 	SPI_set_slave_select();
-	// char reset_instruction = 0b11000000;
-	// SPI_MasterTransmit(reset_instruction);
 	SPI_MasterTransmit(MCP_RESET);
 	SPI_clear_slave_select();
 }
