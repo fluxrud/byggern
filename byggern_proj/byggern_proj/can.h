@@ -64,6 +64,15 @@ void init_can()
 	PropSeg + PS1 >= TDELAY
 	PS2 > SJW
 	
+	t_bit = t_sync + t_propseg + t_ps1 + t_ps2
+	
+	t_sync		= 1 T
+	t_propseg	= 2 T
+	t_ps1		= 8 T
+	t_ps2		= 8 T
+	
+	t_bit = 19 T
+	
 	*/
 	
 	char SJW = 0xc0;
@@ -83,7 +92,7 @@ void init_can()
 	mcp2515_bit_mod(MCP_CNF3, 0xff, SOF + WAKFIL + PHSEG2);
 	
 	// loopback
-	can_set_config_mode(MODE_LOOPBACK);
+	can_set_config_mode(MODE_NORMAL);
 	
 	// enable receive interrupt
 	mcp2515_bit_mod(MCP_CANINTE, MCP_RX_INT, MCP_RX_INT);

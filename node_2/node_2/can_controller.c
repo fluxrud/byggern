@@ -12,7 +12,7 @@
 
 #include "sam.h"
 
-#include "../uart_and_printf/printf-stdarg.h"
+#include "printf-stdarg.h"
 
 
 /**
@@ -24,11 +24,31 @@
  *
  * \retval Success(0) or failure(1)
  */
-uint8_t can_init_def_tx_rx_mb(uint32_t can_br)
+uint8_t can_init_def_tx_rx_mb()
 {
-	return can_init(can_br, 1, 2);
+	uint32_t PHSEG2 = 0x7;
+	uint32_t PHSEG1 = 0x7 << 4;
+	uint32_t PRSEG	= 0x1 << 8;
+	uint32_t SJW	= 0x7 << 12;
+	//uint32_t BRP	= 0x3 << 16;
+	uint32_t BRP	= 0x14; // brp = 20 so that 84MHz becomes 4MHz
+	uint32_t SMP	= 0x1 << 24;
+	return can_init(PHSEG2 + PHSEG1 + PRSEG + SJW  + BRP + SMP, 1, 2);
 }
+/*
+0x00000000
 
+0b011
+	2 * (brp + 1) / f_1
+	6 / f_1
+
+0b111001
+	(brp + 1) / f_2
+	38 / f_2
+	
+f_2 = 38 f_1 / 6
+
+*/
 /**
  * \brief Initialize can bus
  *

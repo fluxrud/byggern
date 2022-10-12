@@ -109,16 +109,18 @@ int main(void)
 		/* TEST */
 		//printf("\n\r-- LOOP --\n\r");
 		//mcp2515_reset();
-		mcp2515_read(0x0e);
+		/*
 		struct can_msg_t msg;
-		msg.id = 0xf0;
+		msg.id = 0x01;
 		msg.data_l = 4;
 		msg.data = (uint8_t*)malloc(msg.data_l);
 		msg.data[0] = 0x12;
 		msg.data[1] = 0x34;
 		msg.data[2] = 0x56;
 		can_transmit_tx_buf0(msg);
+		printf("sent can frame\n\r");
 		free(msg.data);
+		*/
 		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
