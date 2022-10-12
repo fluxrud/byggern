@@ -217,3 +217,14 @@ void mcp2515_reset()
 }
 
 #endif
+
+/*
+debugging:
+
+	- measure clock
+	
+	- reset circuit
+		- identical as in datasheet, except vdd diode.
+
+
+*/

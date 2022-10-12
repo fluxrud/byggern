@@ -64,12 +64,12 @@ int main(void)
 	USART_Init(MYUBRR);
 	init_adc();
 	init_oled();
-	//init_can();
 	
+	//init_can();
 	//init_interrupt();
 	
 	
-	
+	_delay_us(2); // the MCP takes a maximum of 2 us to be ready for a reset
 	SPI_MasterInit();
 	mcp2515_reset();
 	
@@ -87,7 +87,7 @@ int main(void)
 	//printf("\n\r arrow = ");
 	//oled_draw_arrow();
 	
-	_delay_ms(10000);
+	//_delay_ms(10000);
 	toggle_pin('B', 1);
 	//_delay_ms(2000);
 	//toggle_pin('B', 1);
@@ -102,15 +102,23 @@ int main(void)
 	
 	
 	init_can();
+	//can_set_config_mode(MODE_LOOPBACK);
 	
     while (1) 
     {
 		/* TEST */
 		//printf("\n\r-- LOOP --\n\r");
 		//mcp2515_reset();
-		can_set_config_mode(MODE_LOOPBACK);
 		mcp2515_read(0x0e);
-		can_transmit();
+		struct can_msg_t msg;
+		msg.id = 0xf0;
+		msg.data_l = 4;
+		msg.data = (uint8_t*)malloc(msg.data_l);
+		msg.data[0] = 0x12;
+		msg.data[1] = 0x34;
+		msg.data[2] = 0x56;
+		can_transmit_tx_buf0(msg);
+		free(msg.data);
 		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
@@ -126,7 +134,7 @@ int main(void)
 		
 		/* LOOP PERIOD AND LED */
 		toggle_pin('B', 0);
-		_delay_ms(100);
+		_delay_ms(1000);
     }
 }
 

@@ -10,30 +10,24 @@
 #define CAN_H_
 
 #include "mcp2515.h"
+#include <stdlib.h>
 
-/*
-000 = Set Normal Operation mode
-001 = Set Sleep mode
-010 = Set Loopback mode
-011 = Set Listen-Only mode
-100 = Set Configuration mode
-*/
+struct can_msg_t
+{
+	uint8_t id;
+	uint8_t data_l;
+	uint8_t* data;
+};
+
+struct can_msg_t can_read_rx_buf0();
+void display_can_frame(struct can_msg_t msg);
 
 ISR(INT0_vect){
-	//Interrupten skal triggre denne funksjonen
-	printf("Interrupt, ");
-	// can_receive call
-	
-	
-	 /*
-	 0b1000
-	 0b0111
-	 0b1110
-	 */
 	char canstat = mcp2515_read(0x0e);
 	char ICOD = ((((1 << 3) - 1) << 1) & canstat) >> 1;
 	if( ICOD == 6 ){
-		printf("rx buffer 0: %c, canintf = %x\n", mcp2515_read(0b01100110), mcp2515_read(MCP_CANINTF));
+		struct can_msg_t msg = can_read_rx_buf0();
+		display_can_frame(msg);
 	}
 	
 	// clear int flag
@@ -93,35 +87,54 @@ void init_can()
 	
 	// enable receive interrupt
 	mcp2515_bit_mod(MCP_CANINTE, MCP_RX_INT, MCP_RX_INT);
-	
-	
 }
 
-
-void can_transmit()
+void can_transmit_tx_buf0(struct can_msg_t msg)
 {
-	char upper_adr = 0b00110000;
+	uint8_t tx_buf0_base = 0b00110000;
+	uint8_t idh_adr = 0b0001;
+	uint8_t idl_adr = 0b0010;
+	uint8_t dlc_adr = 0b0101;
+	uint8_t dat_adr = 0b0110;
 	
-	char IDH = 0b0001;
-	mcp2515_write(upper_adr + IDH, 0xFF);
-	char IDL = 0b0010;
-	mcp2515_write(upper_adr + IDL, 0x00);
-	
-	
-	char DLC = 0b0101;
-	mcp2515_write(upper_adr + DLC, 1);
-	
-	char D_0 = 0b0110;
-	mcp2515_write(upper_adr + D_0, 'x');
-	
-	
-	// request to send tx buffer 0
+	mcp2515_write(tx_buf0_base + idh_adr, msg.id >> 3);
+	mcp2515_write(tx_buf0_base + idl_adr, msg.id << 5);
+	mcp2515_write(tx_buf0_base + dlc_adr, msg.data_l);
+	for (uint8_t i = 0; i < msg.data_l && i < 8; i++){
+		mcp2515_write(tx_buf0_base + dat_adr + i, msg.data[i]);
+	}
+
 	mcp2515_send_req(0b1);
 }
 
-void can_receive()
+struct can_msg_t can_read_rx_buf0()
 {
-	// CANSTAT to read interrupt flags
+	uint8_t rx_buf0_base = 0b01100000;
+	uint8_t idh_adr = 0b0001;
+	uint8_t idl_adr = 0b0010;
+	uint8_t dlc_adr = 0b0101;
+	uint8_t dat_adr = 0b0110;
+	
+	struct can_msg_t msg;
+	msg.id =  mcp2515_read(rx_buf0_base + idh_adr) << 3;
+	msg.id += mcp2515_read(rx_buf0_base + idl_adr) >> 5;
+	msg.data_l = mcp2515_read(rx_buf0_base + dlc_adr);
+	msg.data = (uint8_t*)malloc(msg.data_l);
+	
+	for (uint8_t i = 0; i < msg.data_l && i < 8; i++){
+		msg.data[i] = mcp2515_read(rx_buf0_base + dat_adr + i);
+	}
+	
+	return msg;
+}
+
+void display_can_frame(struct can_msg_t msg){
+	printf("\n\rCANFRAME");
+	printf("\n\r id: %02x",msg.id);
+	printf("\n\r data_l: %d\n\r data: ",msg.data_l);
+	for (uint8_t i = 0; i < msg.data_l; i++){
+		printf("%02x", msg.data[i]);
+	}
 }
 
 
