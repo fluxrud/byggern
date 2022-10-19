@@ -26,14 +26,13 @@
  */
 uint8_t can_init_def_tx_rx_mb()
 {
-	uint32_t PHSEG2 = 0x7;
-	uint32_t PHSEG1 = 0x7 << 4;
-	uint32_t PRSEG	= 0x1 << 8;
-	uint32_t SJW	= 0x7 << 12;
-	//uint32_t BRP	= 0x3 << 16;
-	uint32_t BRP	= 0x14; // brp = 20 so that 84MHz becomes 4MHz
-	uint32_t SMP	= 0x1 << 24;
-	return can_init(PHSEG2 + PHSEG1 + PRSEG + SJW  + BRP + SMP, 1, 2);
+	uint32_t PHSEG2 = 0x05;
+	uint32_t PHSEG1 = 0x06 << 4;
+	uint32_t PRSEG	= 0x01 << 8;
+	uint32_t SJW	= 0x00 << 12;
+	uint32_t BRP	= 0x29 << 16; // 0.100Mb/s baudrate
+	uint32_t SMP	= 0x00 << 24;
+	return can_init(0x00290165, 5, 2); // 0x00290165 SMP + BRP + SJW + PRSEG + PHSEG1 + PHSEG2
 }
 /*
 0x00000000
@@ -66,7 +65,7 @@ uint8_t can_init(uint32_t can_br, uint8_t num_tx_mb, uint8_t num_rx_mb)
 {
 	
 	//Make sure num_rx_mb and num_tx_mb is valid
-	if(num_rx_mb > 8 | num_tx_mb > 8 | num_rx_mb + num_tx_mb > 8)
+	if((num_rx_mb > 8) | (num_tx_mb > 8) | (num_rx_mb + num_tx_mb > 8))
 	{
 		return 1; //Too many mailboxes is configured
 	}
@@ -78,7 +77,6 @@ uint8_t can_init(uint32_t can_br, uint8_t num_tx_mb, uint8_t num_rx_mb)
 	CAN0->CAN_MR &= ~CAN_MR_CANEN; 
 	//Clear status register on read
 	ul_status = CAN0->CAN_SR; 
-	
 	
 	// Disable interrupts on CANH and CANL pins
 	PIOA->PIO_IDR = PIO_PA8A_URXD | PIO_PA9A_UTXD;

@@ -92,7 +92,7 @@ int main(void)
 	//_delay_ms(2000);
 	//toggle_pin('B', 1);
 	
-	//oled_write_string_on_line("string test", strlen("string test"), 0);
+	oled_write_string_on_line("string test", strlen("string test"), 0);
 	
 	//mcp2515_write(0x0F, 0xF0);
 	//mcp2515_bit_mod(0x0F, 0xFF, 0xFF);
@@ -118,7 +118,8 @@ int main(void)
 		msg.data[1] = 0x34;
 		msg.data[2] = 0x56;
 		can_transmit_tx_buf0(msg);
-		printf("sent can frame\n\r");
+		//printf("sent can frame\n\r");
+		//display_can_frame(msg);
 		free(msg.data);
 		*/
 		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
@@ -127,16 +128,42 @@ int main(void)
 		//display_adc_info(); // using printf
 		
 		/* OLED MENU */
-		//oled_menu_display();
-		//if (get_joystick_direction() == DOWN)	oled_menu_sel_down();
-		//if (get_joystick_direction() == UP)		oled_menu_sel_up();
+		oled_menu_display();
+		
+		/* Joystick poll */
+		switch (get_joystick_direction())
+		{
+			case DOWN:
+				oled_menu_sel_down();
+				can_transmit(1);
+				break;
+			case UP:
+				oled_menu_sel_up();
+				can_transmit(2);
+				break;
+			case RIGHT:
+				can_transmit(3);
+				break;
+			case LEFT:
+				can_transmit(4);
+				break;
+			default:
+				break;
+				
+		}
 		
 		/* OLED RENDER */
-		//oled_render();
+		oled_render();
+		
+		// read rx buffer
+		//struct can_msg_t msg = can_read_rx_buf0();
+		//display_can_frame(msg);
 		
 		/* LOOP PERIOD AND LED */
 		toggle_pin('B', 0);
-		_delay_ms(1000);
+		_delay_ms(100);
+		//printf("canstat: %x\n", mcp2515_read(0x0e));
+		//printf("eflg: %x\n", mcp2515_read(0x2d));
     }
 }
 

@@ -17,7 +17,7 @@
 
 #include "can_controller.h"
 
-#define DEBUG_INTERRUPT 1
+#define DEBUG_INTERRUPT 0
 
 /**
  * \brief CAN0 Interrupt handler for RX, TX and bus error interrupts
@@ -38,7 +38,6 @@ void CAN0_Handler( void )
 		if(can_sr & CAN_SR_MB1)  //Mailbox 1 event
 		{
 			can_receive(&message, 1);
-
 		}
 		else if(can_sr & CAN_SR_MB2) //Mailbox 2 event
 		
@@ -49,6 +48,7 @@ void CAN0_Handler( void )
 		{
 			printf("CAN0 message arrived in non-used mailbox\n\r");
 		}
+		printf("joystick: %d (DOWN = 1, UP, RIGHT, LEFT)\n", message.data[0]);
 
 		if(DEBUG_INTERRUPT)printf("message id: %d\n\r", message.id);
 		if(DEBUG_INTERRUPT)printf("message data length: %d\n\r", message.data_length);
@@ -65,7 +65,6 @@ void CAN0_Handler( void )
 		
 	//Disable interrupt
 		CAN0->CAN_IDR = CAN_IER_MB0;
-
 	}
 
 	if(can_sr & CAN_SR_ERRP)
@@ -80,5 +79,5 @@ void CAN0_Handler( void )
 	}
 	
 	NVIC_ClearPendingIRQ(ID_CAN0);
-	//sei();*/
+	//sei();
 }

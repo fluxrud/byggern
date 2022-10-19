@@ -25,13 +25,22 @@ void display_can_frame(struct can_msg_t msg);
 ISR(INT0_vect){
 	char canstat = mcp2515_read(0x0e);
 	char ICOD = ((((1 << 3) - 1) << 1) & canstat) >> 1;
-	if( ICOD == 6 ){
+	printf("\ninterrupt, ICOD: %d\n", ICOD);
+	if( ICOD == 1 ){
+		printf("Error interrupt, eflg: %x\n", mcp2515_read(0x2d));
+		mcp2515_bit_mod(MCP_CANINTF, 1 + (1 << 5), 0);
+	} else if( ICOD == 6 ){
 		struct can_msg_t msg = can_read_rx_buf0();
 		display_can_frame(msg);
+		mcp2515_bit_mod(MCP_CANINTF, 1, 0);
+	} else if( ICOD == 7 ){
+		struct can_msg_t msg = can_read_rx_buf0();
+		display_can_frame(msg);
+		mcp2515_bit_mod(MCP_CANINTF, 1 << 1, 0);
 	}
 	
 	// clear int flag
-	mcp2515_bit_mod(MCP_CANINTF, 1 + (1 << 2), 0);
+	mcp2515_bit_mod(MCP_CANINTF, (1 << 2), 0); // clear tx buf 0 flag
 	set_bit(GIFR, 6);
 }
 
@@ -49,7 +58,8 @@ void can_interrupt_enable()
 
 void can_set_config_mode(char c)
 {
-	mcp2515_bit_mod(MCP_CANCTRL, 0b111 << 5, c);
+	mcp2515_bit_mod(MCP_CANCTRL, 0b111 << 5, c); // set REQOP bits
+	//mcp2515_bit_mod(MCP_CANCTRL, 1 << 2, 1); // clk enable
 }
 
 void init_can()
@@ -73,29 +83,33 @@ void init_can()
 	
 	t_bit = 19 T
 	
+	T = 2 * (brp + 1) / f_osc
 	*/
 	
-	char SJW = 0xc0;
-	char BRP = 0x01; // set baud-rate T = 2 * (brp + 1) / f_osc
+	char SJW	= 0x0 << 6;
+	char BRP	= 0x3; // -> 105kb/s
 	
-	char BTLMOD = 0x00;
-	char SAM = 0x40;
-	char PHSEG1 = 0x38;
-	char PRSEG = 0x01;
+	char BTLMOD = 0x1 << 7;
+	char SAM	= 0x0 << 6;
+	char PHSEG1 = 0x6 << 3;
+	char PRSEG	= 0x1;
 	
-	char SOF = 0x80;
-	char WAKFIL = 0x00;
-	char PHSEG2 = 0x07;
+	char SOF	= 0x0 << 7;
+	char WAKFIL = 0x0 << 6;
+	char PHSEG2 = 0x5;
 	
 	mcp2515_bit_mod(MCP_CNF1, 0xff, SJW + BRP);
 	mcp2515_bit_mod(MCP_CNF2, 0xff, BTLMOD + SAM + PHSEG1 + PRSEG);
 	mcp2515_bit_mod(MCP_CNF3, 0xff, SOF + WAKFIL + PHSEG2);
 	
-	// loopback
 	can_set_config_mode(MODE_NORMAL);
 	
 	// enable receive interrupt
-	mcp2515_bit_mod(MCP_CANINTE, MCP_RX_INT, MCP_RX_INT);
+	mcp2515_bit_mod(MCP_CANINTE, MCP_RX_INT, MCP_RX_INT); // enable rx0 interrupt
+	mcp2515_bit_mod(MCP_CANINTE, 1 << 5, 1 << 5);
+	mcp2515_bit_mod(MCP_RXB0CTRL, 0b11 << 5, 0b11 << 5);
+	
+	mcp2515_bit_mod(MCP_RXF0SIDL, 1 << 3, 1 << 3);
 }
 
 void can_transmit_tx_buf0(struct can_msg_t msg)
@@ -103,11 +117,14 @@ void can_transmit_tx_buf0(struct can_msg_t msg)
 	uint8_t tx_buf0_base = 0b00110000;
 	uint8_t idh_adr = 0b0001;
 	uint8_t idl_adr = 0b0010;
+	uint8_t eidh_adr = 0b0011;
+	uint8_t eidl_adr = 0b0100;
 	uint8_t dlc_adr = 0b0101;
 	uint8_t dat_adr = 0b0110;
-	
 	mcp2515_write(tx_buf0_base + idh_adr, msg.id >> 3);
-	mcp2515_write(tx_buf0_base + idl_adr, msg.id << 5);
+	mcp2515_write(tx_buf0_base + idl_adr, (msg.id << 5) + (1 << 3)); // sets extended if as well
+	mcp2515_write(tx_buf0_base + eidl_adr, 0xff);
+	mcp2515_write(tx_buf0_base + eidh_adr, 0xff);
 	mcp2515_write(tx_buf0_base + dlc_adr, msg.data_l);
 	for (uint8_t i = 0; i < msg.data_l && i < 8; i++){
 		mcp2515_write(tx_buf0_base + dat_adr + i, msg.data[i]);
@@ -144,6 +161,16 @@ void display_can_frame(struct can_msg_t msg){
 	for (uint8_t i = 0; i < msg.data_l; i++){
 		printf("%02x", msg.data[i]);
 	}
+}
+
+void can_transmit(char d){
+	struct can_msg_t msg;
+	msg.id = 0x01;
+	msg.data_l = 1;
+	msg.data = (uint8_t*)malloc(msg.data_l);
+	msg.data[0] = d;
+	can_transmit_tx_buf0(msg);
+	free(msg.data);
 }
 
 

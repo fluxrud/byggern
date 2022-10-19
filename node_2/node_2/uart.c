@@ -60,7 +60,8 @@ Initialize UART communication
 
 	// Set the baudrate
 	//UART->UART_BRGR = 547; // MCK / 16 * x = BaudRate (write x into UART_BRGR)  
-	UART->UART_BRGR = 547; // MCK = 12 MHz, => BaudRate = 9612
+	//UART->UART_BRGR = 547; // MCK = 12 MHz, => BaudRate = 9612
+	UART->UART_BRGR = 547;
 
 	// No parity bits
 	UART->UART_MR = UART_MR_PAR_NO | UART_MR_CHMODE_NORMAL;	

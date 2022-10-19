@@ -14,6 +14,8 @@
 #define UART_H_
 
 #include <stdint.h>
+#include "printf-stdarg.h"
+
 #define UART_RINGBUFFER_SIZE 64
 /*
  * Ringbuffer for receiving characters from  
