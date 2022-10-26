@@ -11,44 +11,106 @@
 
 /*
 
+5v protected pins
+
 name:		PWMH5 
 pin:		PC19 
 peripheral: B
 (pin 44 on shield)
 
+name:		PWMH6
+pin:		PC18
+peripheral: B
+(pin 45 on shield)
+
 */
 
 #include "sam.h"
 
-uint32_t CPRD = 1680000;
+uint32_t CPRD = 52500;//1680000; // 
+static uint32_t servo_pos_us = 1500;
+
+void pwm_config(uint8_t ch_num);
 
 void init_pwm(){
 	
-	int ch_num = 5;
+	// pin disable PIO
+	PIOC->PIO_PDR |= PIO_PDR_P19;
+	PIOC->PIO_PDR |= PIO_PDR_P18;
 	
+	// pin peripheral b select
+	PIOC->PIO_ABSR |= PIO_ABSR_P19;
+	PIOC->PIO_ABSR |= PIO_ABSR_P18;
+	
+	PMC->PMC_PCR = (1 << 28) + (1 << 12) + 36;
+	
+	
+	pwm_config(5);
+	pwm_config(6);
+}
+
+void pwm_config(uint8_t ch_num){
+	
+	PWM->PWM_ENA &= ~(1 << ch_num);
 	// disable write protect for all register groups to enable configuration of pwm
 	PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b00;
 	
 	// clk gen?
+	//PWM->PWM_CLK = PWM_CLK_DIVA(1) + PWM_CLK_DIVB(1) + PWM_CLK_PREA(1) + PWM_CLK_PREB(1);
 	
 	// select clock
-	//PWM->PWM_CH_NUM[ch_num]->PWM_CMR = ()
+	PWM->PWM_CH_NUM[ch_num].PWM_CMR = 0b0101; // select CLKA : 0b1011, select MCLK : 0b0000;
 	
 	// select period
 	PWM->PWM_CH_NUM[ch_num].PWM_CPRD = CPRD;
 	
 	// set duty cycle
-	PWM->PWM_CH_NUM[ch_num].PWM_CDTY = CPRD / 2;
+	PWM->PWM_CH_NUM[ch_num].PWM_CDTY = CPRD - 1500 * 84 / 32;
 	
 	// set cmp mode
-	//PWM->PWM_CH_NUM[ch_num].PWM_CMPM = 
+	//PWM->PWM_CH_NUM[ch_num].PWM_CMPM =
 	
 	// enable pwm channel
-	PWM->PWM_ENA = 1 << 5;
+	PWM->PWM_ENA |= 1 << ch_num;
 	
 	// lock write-protect
 	PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b10;
 }
+
+
+/*
+error 1 on invalid us value
+*/
+uint8_t pwm_set_dc(uint8_t ch_num, uint32_t us_high){
+	if (us_high >= 2000 || us_high <= 1000){
+		return 1;	
+	}
+	uint32_t period_us = CPRD * 32 / 84; // us
+	uint8_t duty_cycle_divisor = period_us / us_high;
+	
+	//PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b00;
+	//PWM->PWM_CH_NUM[ch_num].PWM_CDTY = CPRD - CPRD / duty_cycle_divisor;
+	//PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b10;
+	
+	PWM->PWM_CH_NUM[ch_num].PWM_CDTYUPD = CPRD - CPRD / duty_cycle_divisor;
+	
+	return 0;
+}
+
+void pwm_joystick_read(uint8_t dir){
+	uint8_t joystick_delta = 50;
+	
+	if (dir == 3){
+		// right
+		servo_pos_us += joystick_delta;
+		if(pwm_set_dc(5, servo_pos_us) != 0) servo_pos_us -= joystick_delta; // out of bounds correction
+	} else if (dir == 4){
+		// left
+		servo_pos_us -= joystick_delta;
+		if(pwm_set_dc(5, servo_pos_us) != 0) servo_pos_us += joystick_delta; // out of bounds correction
+	}
+}
+	
 
 #endif /* PWM_H_ */
 

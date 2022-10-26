@@ -17,6 +17,8 @@
 
 #include "can_controller.h"
 
+//#include "pwm_driver.h"
+
 #define DEBUG_INTERRUPT 0
 
 /**
@@ -49,6 +51,7 @@ void CAN0_Handler( void )
 			printf("CAN0 message arrived in non-used mailbox\n\r");
 		}
 		printf("joystick: %d (DOWN = 1, UP, RIGHT, LEFT)\n", message.data[0]);
+		pwm_joystick_read(message.data[0]);
 
 		if(DEBUG_INTERRUPT)printf("message id: %d\n\r", message.id);
 		if(DEBUG_INTERRUPT)printf("message data length: %d\n\r", message.data_length);

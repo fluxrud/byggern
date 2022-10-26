@@ -22,8 +22,10 @@ void delay(uint32_t ms){
 
 void init()
 {
-	pin_util_set_dir('A', 19);
-	pin_util_set_dir('A', 20);
+	WDT->WDT_MR = WDT_MR_WDDIS;
+	pin_util_set_dir('A', 19, OUTPUT_ENABLE);
+	pin_util_set_dir('A', 20, OUTPUT_ENABLE);
+	
 }
 
 int main(void)
@@ -53,6 +55,7 @@ int main(void)
 		int ret = can_send(&msg, 0);
 		//if (ret != 0) printf(" can tx mb busy");
 		*/
+		//pwm_set_dc(5, 1999);
 		delay(500);
     }
 }

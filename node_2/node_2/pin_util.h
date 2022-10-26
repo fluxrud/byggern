@@ -9,13 +9,28 @@
 #ifndef PIN_UTIL_H_
 #define PIN_UTIL_H_
 
-void pin_util_set_dir(char port, uint8_t pin)
+
+enum PIN_DIR_TYPE{OUTPUT_ENABLE = 1, PIO_ENABLE, PIO_DISABLE};
+	
+void pin_util_set_dir(char port, uint8_t pin, enum PIN_DIR_TYPE type)
 {
 	switch (port) {
 		case 'A':
 		{
-			PIOA->PIO_OER |= 1u << pin;
-			//PIOA->PIO_PER |= 1u << pin;
+			if (type == 1){
+				PIOA->PIO_OER |= 1u << pin;	
+			} else if (type == 2){
+				PIOA->PIO_PER |= 1u << pin;
+			}
+			break;
+		}
+		case 'B':
+		{
+			if (type == 1){
+				PIOB->PIO_OER |= 1u << pin;
+			} else if (type == 2){
+				PIOB->PIO_PER |= 1u << pin;
+			}
 			break;
 		}
 		default: break;
