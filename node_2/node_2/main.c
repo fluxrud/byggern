@@ -13,6 +13,7 @@
 #include "uart.h"
 #include "can_controller.h"
 #include "pwm_driver.h"
+#include "adc_driver.h"
 
 #define F_CPU 4000
 
@@ -22,23 +23,20 @@ void delay(uint32_t ms){
 
 void init()
 {
+	SystemInit();
 	WDT->WDT_MR = WDT_MR_WDDIS;
 	pin_util_set_dir('A', 19, OUTPUT_ENABLE);
 	pin_util_set_dir('A', 20, OUTPUT_ENABLE);
-	
-}
-
-int main(void)
-{
-	SystemInit();
-	init();
 	configure_uart();
 	uint8_t ret = can_init_def_tx_rx_mb();
 	if(ret == 1) printf("can init failed");
 	init_pwm();
-	
-	//printf("begin");	
-	//uart_putchar("c");
+	init_adc();
+}
+
+int main(void)
+{
+	init();
 	
     while (1) 
     {
@@ -57,5 +55,6 @@ int main(void)
 		*/
 		//pwm_set_dc(5, 1999);
 		delay(500);
+		//printf("ADC read: %x\n\r", adc_read(7));
     }
 }
