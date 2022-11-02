@@ -27,6 +27,8 @@ peripheral: B
 
 #include "sam.h"
 
+#include "motor_driver.h"
+
 uint32_t CPRD = 52500;//1680000; // 
 static uint32_t servo_pos_us = 1500;
 
@@ -97,17 +99,26 @@ uint8_t pwm_set_dc(uint8_t ch_num, uint32_t us_high){
 	return 0;
 }
 
-void pwm_joystick_read(uint8_t dir){
+void pwm_joystick_move(uint8_t dir){
 	uint8_t joystick_delta = 50;
 	
 	if (dir == 3){
 		// right
-		servo_pos_us += joystick_delta;
-		if(pwm_set_dc(5, servo_pos_us) != 0) servo_pos_us -= joystick_delta; // out of bounds correction
-	} else if (dir == 4){
-		// left
 		servo_pos_us -= joystick_delta;
 		if(pwm_set_dc(5, servo_pos_us) != 0) servo_pos_us += joystick_delta; // out of bounds correction
+		
+		//motor_set_enable(1);
+		//motor_set_direction(1);
+		//motor_set_speed(0xcf);
+		
+	} else if (dir == 4){
+		// left
+		servo_pos_us += joystick_delta;
+		if(pwm_set_dc(5, servo_pos_us) != 0) servo_pos_us -= joystick_delta; // out of bounds correction
+		
+		//motor_set_enable(1);
+		//motor_set_direction(0);
+		//motor_set_speed(0xcf);
 	}
 }
 	

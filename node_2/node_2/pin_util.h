@@ -17,20 +17,46 @@ void pin_util_set_dir(char port, uint8_t pin, enum PIN_DIR_TYPE type)
 	switch (port) {
 		case 'A':
 		{
+			//PIOA->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 0;
 			if (type == 1){
 				PIOA->PIO_OER |= 1u << pin;	
 			} else if (type == 2){
 				PIOA->PIO_PER |= 1u << pin;
 			}
+			//PIOA->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 1;
 			break;
 		}
 		case 'B':
 		{
+			//PIOB->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 0;
 			if (type == 1){
 				PIOB->PIO_OER |= 1u << pin;
 			} else if (type == 2){
 				PIOB->PIO_PER |= 1u << pin;
 			}
+			//PIOB->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 1;
+			break;
+		}
+		case 'C':
+		{
+			//PIOC->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 0;
+			if (type == 1){
+				PIOC->PIO_OER |= 1u << pin;
+				} else if (type == 2){
+				PIOC->PIO_PER |= 1u << pin;
+			}
+			//PIOC->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 1;
+			break;
+		}
+		case 'D':
+		{
+			//PIOD->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 0;
+			if (type == 1){
+				PIOD->PIO_OER |= 1u << pin;
+				} else if (type == 2){
+				PIOD->PIO_PER |= 1u << pin;
+			}
+			//PIOD->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 1;
 			break;
 		}
 		default: break;

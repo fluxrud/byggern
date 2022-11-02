@@ -125,32 +125,34 @@ int main(void)
 		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
-		//display_adc_info(); // using printf
+		display_adc_info(); // using printf
 		
 		/* OLED MENU */
 		oled_menu_display();
 		
-		/* Joystick poll */
+		/* JOYSTICK TX */
 		switch (get_joystick_direction())
 		{
 			case DOWN:
 				oled_menu_sel_down();
-				can_transmit(1);
+				can_transmit(0x1f, 1);
 				break;
 			case UP:
 				oled_menu_sel_up();
-				can_transmit(2);
+				can_transmit(0x1f, 2);
 				break;
 			case RIGHT:
-				can_transmit(3);
+				can_transmit(0x1f, 3);
 				break;
 			case LEFT:
-				can_transmit(4);
+				can_transmit(0x1f, 4);
 				break;
 			default:
 				break;
-				
 		}
+		
+		/* RIGHT SLIDER TX */
+		can_transmit(0x2f, get_slider_right_analog());
 		
 		/* OLED RENDER */
 		oled_render();

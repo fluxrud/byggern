@@ -50,8 +50,20 @@ void CAN0_Handler( void )
 		{
 			printf("CAN0 message arrived in non-used mailbox\n\r");
 		}
-		printf("joystick: %d (DOWN = 1, UP, RIGHT, LEFT)\n", message.data[0]);
-		pwm_joystick_read(message.data[0]);
+		
+		switch (message.data[0]){
+			case 0x1f: {
+				//printf("can: %x", message.data[1]);
+				// joystick data
+				pwm_joystick_move(message.data[1]);
+				break;
+			}
+			case 0x2f: {
+				// right slider data
+				//motor_set_position(message.data[1]);
+				break;
+			}
+		}
 
 		if(DEBUG_INTERRUPT)printf("message id: %d\n\r", message.id);
 		if(DEBUG_INTERRUPT)printf("message data length: %d\n\r", message.data_length);

@@ -14,6 +14,8 @@
 #include "can_controller.h"
 #include "pwm_driver.h"
 #include "adc_driver.h"
+#include "dac_driver.h"
+#include "timer_driver.h"
 
 #define F_CPU 4000
 
@@ -28,10 +30,15 @@ void init()
 	pin_util_set_dir('A', 19, OUTPUT_ENABLE);
 	pin_util_set_dir('A', 20, OUTPUT_ENABLE);
 	configure_uart();
-	uint8_t ret = can_init_def_tx_rx_mb();
-	if(ret == 1) printf("can init failed");
+	uint8_t ret = can_init_def_tx_rx_mb(); if(ret == 1) printf("can init failed");
 	init_pwm();
 	init_adc();
+	init_dac();
+	init_motor();
+	//init_timer();
+	
+	// set direction of MJ2
+	for (uint8_t i = 1; i < 9; i++) pin_util_set_dir('C', i, PIO_ENABLE);
 }
 
 int main(void)
@@ -56,5 +63,8 @@ int main(void)
 		//pwm_set_dc(5, 1999);
 		delay(500);
 		//printf("ADC read: %x\n\r", adc_read(7));
+		printf("%x\n\r", PIOC->PIO_PDSR & ((1<<9) - 1));
+		//printf("%x\n\r", TC0->TC_CHANNEL[0].TC_CV);
+		//printf("tc0 status: %x\n\r", TC0->TC_CHANNEL[0].TC_SR);
     }
 }

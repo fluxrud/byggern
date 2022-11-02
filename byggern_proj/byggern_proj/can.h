@@ -163,12 +163,24 @@ void display_can_frame(struct can_msg_t msg){
 	}
 }
 
-void can_transmit(char d){
+/*
+todo: implement id-filters
+
+until then
+
+data[0] = t = type of data
+0x1f = joystick
+0x2f = slider
+
+*/
+
+void can_transmit(char t, char d){
 	struct can_msg_t msg;
 	msg.id = 0x01;
-	msg.data_l = 1;
+	msg.data_l = 2;
 	msg.data = (uint8_t*)malloc(msg.data_l);
-	msg.data[0] = d;
+	msg.data[0] = t;
+	msg.data[1] = d;
 	can_transmit_tx_buf0(msg);
 	free(msg.data);
 }
