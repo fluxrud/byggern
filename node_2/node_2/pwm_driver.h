@@ -88,13 +88,14 @@ uint8_t pwm_set_dc(uint8_t ch_num, uint32_t us_high){
 		return 1;	
 	}
 	uint32_t period_us = CPRD * 32 / 84; // us
-	uint8_t duty_cycle_divisor = period_us / us_high;
+	uint32_t duty_cycle_divisor = period_us / us_high;
 	
-	//PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b00;
-	//PWM->PWM_CH_NUM[ch_num].PWM_CDTY = CPRD - CPRD / duty_cycle_divisor;
-	//PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b10;
+	PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b00;
+	PWM->PWM_CH_NUM[ch_num].PWM_CDTY = CPRD - CPRD / duty_cycle_divisor;
+	printf("dc: %d\n\r", CPRD - CPRD / duty_cycle_divisor);
+	PWM->PWM_WPCR = ('P' << 24) + ('W' << 16) + ('M' << 8) + (0b1111111 << 2) + 0b10;
 	
-	PWM->PWM_CH_NUM[ch_num].PWM_CDTYUPD = CPRD - CPRD / duty_cycle_divisor;
+	//PWM->PWM_CH_NUM[ch_num].PWM_CDTYUPD = CPRD - CPRD / duty_cycle_divisor;
 	
 	return 0;
 }

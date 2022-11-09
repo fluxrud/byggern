@@ -104,6 +104,8 @@ int main(void)
 	init_can();
 	//can_set_config_mode(MODE_LOOPBACK);
 	
+	uint8_t slider_value = get_slider_right_analog();
+	
     while (1) 
     {
 		/* TEST */
@@ -152,7 +154,11 @@ int main(void)
 		}
 		
 		/* RIGHT SLIDER TX */
-		can_transmit(0x2f, get_slider_right_analog());
+		uint8_t n_slider_value = get_slider_right_analog();
+		if (abs(slider_value - n_slider_value) > 5){
+			can_transmit(0x2f, n_slider_value);
+		}
+		slider_value = n_slider_value;
 		
 		/* OLED RENDER */
 		oled_render();

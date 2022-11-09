@@ -25,6 +25,7 @@ void delay(uint32_t ms){
 
 void init()
 {
+	//for (int i = 0; i < 7; i++) PMC->PMC_PCR = (1 << 28) + (1 << 12) + 27 + 11 + i;
 	SystemInit();
 	WDT->WDT_MR = WDT_MR_WDDIS;
 	pin_util_set_dir('A', 19, OUTPUT_ENABLE);
@@ -33,22 +34,22 @@ void init()
 	uint8_t ret = can_init_def_tx_rx_mb(); if(ret == 1) printf("can init failed");
 	init_pwm();
 	init_adc();
-	init_dac();
 	init_motor();
-	//init_timer();
+	init_dac();
+	init_timer();
 	
-	// set direction of MJ2
-	for (uint8_t i = 1; i < 9; i++) pin_util_set_dir('C', i, PIO_ENABLE);
+	// solenoid pin23 -> PD10
+	//PIOD->PIO_PER = 1 << 10;
+	//PIOD->PIO_OER = 1 << 10;
+	//PIOD->PIO_SODR = 1 << 10;
 }
 
 int main(void)
 {
 	init();
-	
     while (1) 
     {
-		pin_util_toggle('A', 19);
-		pin_util_toggle('A', 20);
+		
 		/*
 		struct can_message_t msg;
 		msg.id = 0x02;
@@ -61,9 +62,9 @@ int main(void)
 		//if (ret != 0) printf(" can tx mb busy");
 		*/
 		//pwm_set_dc(5, 1999);
-		delay(500);
+		// delay(500);
 		//printf("ADC read: %x\n\r", adc_read(7));
-		printf("%x\n\r", PIOC->PIO_PDSR & ((1<<9) - 1));
+		// printf("%x\n\r", PIOC->PIO_PDSR & ((1<<9) - 1));
 		//printf("%x\n\r", TC0->TC_CHANNEL[0].TC_CV);
 		//printf("tc0 status: %x\n\r", TC0->TC_CHANNEL[0].TC_SR);
     }

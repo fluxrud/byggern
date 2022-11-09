@@ -56,11 +56,32 @@ void CAN0_Handler( void )
 				//printf("can: %x", message.data[1]);
 				// joystick data
 				pwm_joystick_move(message.data[1]);
+				if (0){
+					if (message.data[1] == 3){
+						// move right
+						printf("motor right \n\r");
+						motor_set_speed(255);
+						motor_set_direction(1);
+						motor_set_enable(1);
+						} else if (message.data[1] == 4){
+						// move left
+						printf("motor left \n\r");
+						motor_set_speed(255);
+						motor_set_direction(0);
+						motor_set_enable(1);
+						} else {
+						printf("stop \n\r");
+						motor_set_speed(0);
+						motor_set_direction(0);
+						motor_set_enable(0);
+					}
+				}
 				break;
 			}
 			case 0x2f: {
 				// right slider data
-				//motor_set_position(message.data[1]);
+				//printf("slider pos: %d\n\r", message.data[1]);
+				motor_set_position(255 - message.data[1]);
 				break;
 			}
 		}
