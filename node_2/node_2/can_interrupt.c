@@ -84,6 +84,12 @@ void CAN0_Handler( void )
 				motor_set_position(255 - message.data[1]);
 				break;
 			}
+			case 0x3f: {
+				// left slider data
+				//printf("slider pos: %d\n\r", message.data[1]);
+				pin_util_toggle('C', 22);
+				break;
+			}
 		}
 
 		if(DEBUG_INTERRUPT)printf("message id: %d\n\r", message.id);

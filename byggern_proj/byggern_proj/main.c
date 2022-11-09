@@ -160,6 +160,13 @@ int main(void)
 		}
 		slider_value = n_slider_value;
 		
+		/* LEFT SLIDER */
+		uint8_t l_slider_val = get_slider_left_analog();
+		if (l_slider_val > 100){
+			can_transmit(0x3f, l_slider_val);
+		}
+		slider_value = n_slider_value;
+		
 		/* OLED RENDER */
 		oled_render();
 		

@@ -25,6 +25,7 @@ void delay(uint32_t ms){
 
 void init()
 {
+	PIOC->PIO_WPMR = ('P' << 24) + ('I' << 16) + ('O' << 8) + 0;
 	//for (int i = 0; i < 7; i++) PMC->PMC_PCR = (1 << 28) + (1 << 12) + 27 + 11 + i;
 	SystemInit();
 	WDT->WDT_MR = WDT_MR_WDDIS;
@@ -39,9 +40,15 @@ void init()
 	init_timer();
 	
 	// solenoid pin23 -> PD10
-	//PIOD->PIO_PER = 1 << 10;
-	//PIOD->PIO_OER = 1 << 10;
-	//PIOD->PIO_SODR = 1 << 10;
+	// PC22
+	PMC->PMC_PCR = (1 << 28) + (1 << 12) + 13;
+	PMC->PMC_PCR = (1 << 28) + (1 << 12) + 14;
+	PMC->PMC_PCR = (1 << 28) + (1 << 12) + 15;
+	
+	//PIOC->PIO_PER = 1 << 22;
+	//PIOC->PIO_PDR = 1 << 10;
+	PIOC->PIO_OER = 1 << 22;
+	PIOC->PIO_SODR = 1 << 22;
 }
 
 int main(void)

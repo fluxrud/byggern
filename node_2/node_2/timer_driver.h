@@ -70,7 +70,7 @@ void TC1_Handler(){
 	
 	pin_util_toggle('A', 19);
 	pin_util_toggle('A', 20);
-	//pin_util_toggle('D', 10);
+	//pin_util_toggle('C', 22);
 	
 	// clear ch 0 and nvic
 	//TC1->TC_CHANNEL[0].TC_CCR = (1 << 2) + 1;

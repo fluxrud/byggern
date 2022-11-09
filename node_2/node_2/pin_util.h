@@ -75,6 +75,15 @@ void pin_util_toggle(char port, uint8_t pin)
 			//PIOA->PIO_SODR = port_data & ~(1 << pin);
 			break;
 		}
+		case 'C':
+		{
+			uint32_t port_data = PIOC->PIO_ODSR;
+			if (port_data & (1u << pin))	PIOC->PIO_CODR = (1u << pin);
+			else							PIOC->PIO_SODR = (1u << pin);
+			//PIOA->PIO_SODR = port_data ^ (1u << pin);
+			//PIOA->PIO_SODR = port_data & ~(1 << pin);
+			break;
+		}
 		case 'D':
 		{
 			uint32_t port_data = PIOD->PIO_ODSR;
