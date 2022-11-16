@@ -19,7 +19,7 @@
 
 //#include "pwm_driver.h"
 
-#define DEBUG_INTERRUPT 0
+#define DEBUG_INTERRUPT 1
 
 /**
  * \brief CAN0 Interrupt handler for RX, TX and bus error interrupts
@@ -50,14 +50,18 @@ void CAN0_Handler( void )
 		{
 			printf("CAN0 message arrived in non-used mailbox\n\r");
 		}
-		
+		pwm_joystick_move(message.data[0]);
+		motor_set_position(255 - message.data[1]);
+		if (message.data[2] > 0x10) pin_util_toggle('C', 22);
+		printf("%x, %x, %x", message.data[0], message.data[1], message.data[2]);
+		/*
 		switch (message.data[0]){
 			case 0x1f: {
 				//printf("can: %x", message.data[1]);
 				// joystick data
-				pwm_joystick_move(message.data[1]);
+				pwm_joystick_move(message.data[0]);
 				if (0){
-					if (message.data[1] == 3){
+					if (message.data[0] == 3){
 						// move right
 						printf("motor right \n\r");
 						motor_set_speed(255);
@@ -91,7 +95,7 @@ void CAN0_Handler( void )
 				break;
 			}
 		}
-
+		*/
 		if(DEBUG_INTERRUPT)printf("message id: %d\n\r", message.id);
 		if(DEBUG_INTERRUPT)printf("message data length: %d\n\r", message.data_length);
 		for (int i = 0; i < message.data_length; i++)

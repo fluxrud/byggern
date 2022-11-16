@@ -174,14 +174,16 @@ data[0] = t = type of data
 
 */
 
-void can_transmit(char t, char d){
+void can_transmit(char joystick_dir, char slider_pos, char button_val){
 	struct can_msg_t msg;
 	msg.id = 0x01;
-	msg.data_l = 2;
+	msg.data_l = 3;
 	msg.data = (uint8_t*)malloc(msg.data_l);
-	msg.data[0] = t;
-	msg.data[1] = d;
+	msg.data[0] = joystick_dir;
+	msg.data[1] = slider_pos;
+	msg.data[2] = button_val;
 	can_transmit_tx_buf0(msg);
+	display_can_frame(msg);
 	free(msg.data);
 }
 

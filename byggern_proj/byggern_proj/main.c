@@ -30,6 +30,8 @@
 
 #include "joystick_button.h"
 
+#include "timer_driver.h"
+
 void init_pin_directions()
 {
 	// set PORTB PIN0 direction as output
@@ -102,6 +104,7 @@ int main(void)
 	
 	
 	init_can();
+	init_timer();
 	//can_set_config_mode(MODE_LOOPBACK);
 	
 	uint8_t slider_value = get_slider_right_analog();
@@ -127,12 +130,12 @@ int main(void)
 		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
-		display_adc_info(); // using printf
+		// display_adc_info(); // using printf
 		
 		/* OLED MENU */
 		oled_menu_display();
 		
-		/* JOYSTICK TX */
+		/* JOYSTICK TX 
 		switch (get_joystick_direction())
 		{
 			case DOWN:
@@ -156,17 +159,17 @@ int main(void)
 		/* RIGHT SLIDER TX */
 		uint8_t n_slider_value = get_slider_right_analog();
 		if (abs(slider_value - n_slider_value) > 5){
-			can_transmit(0x2f, n_slider_value);
+			can_transmit(0x00, n_slider_value, 0x00);
 		}
 		slider_value = n_slider_value;
 		
-		/* LEFT SLIDER */
+		/* LEFT SLIDER 
 		uint8_t l_slider_val = get_slider_left_analog();
 		if (l_slider_val > 100){
 			can_transmit(0x3f, l_slider_val);
 		}
 		slider_value = n_slider_value;
-		
+		*/
 		/* OLED RENDER */
 		oled_render();
 		

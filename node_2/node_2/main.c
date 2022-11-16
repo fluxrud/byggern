@@ -56,7 +56,6 @@ int main(void)
 	init();
     while (1) 
     {
-		
 		/*
 		struct can_message_t msg;
 		msg.id = 0x02;
