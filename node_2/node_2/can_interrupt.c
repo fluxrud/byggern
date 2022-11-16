@@ -19,7 +19,7 @@
 
 //#include "pwm_driver.h"
 
-#define DEBUG_INTERRUPT 1
+#define DEBUG_INTERRUPT 0
 
 /**
  * \brief CAN0 Interrupt handler for RX, TX and bus error interrupts
@@ -52,8 +52,14 @@ void CAN0_Handler( void )
 		}
 		pwm_joystick_move(message.data[0]);
 		motor_set_position(255 - message.data[1]);
-		if (message.data[2] > 0x10) pin_util_toggle('C', 22);
-		printf("%x, %x, %x", message.data[0], message.data[1], message.data[2]);
+		if (message.data[2] > 0x10) 
+		{
+			PIOC->PIO_CODR = (1u << 22);
+			adc_interrupt_clear();
+		} else {
+			PIOC->PIO_SODR = (1u << 22);
+		}
+		//printf("%x, %x, %x\n\r", message.data[0], message.data[1], message.data[2]);
 		/*
 		switch (message.data[0]){
 			case 0x1f: {

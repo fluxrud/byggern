@@ -19,7 +19,7 @@ n = number of channels converted
 
 #include "adc.h"
 
-enum joystick_direction {LEFT = 0, RIGHT, UP, DOWN, NEUTRAL};
+enum joystick_direction {NEUTRAL = 0, DOWN, UP, RIGHT, LEFT};
 
 struct joystick_analog 
 {

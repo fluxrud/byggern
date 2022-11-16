@@ -42,9 +42,12 @@ timer interrupt vectors
 #define SIG_OVERFLOW3			_VECTOR(9)
 */
 
+void config_timer();
+
 ISR(TIMER3_COMPB_vect){
 	
-	//can_transmit(get_joystick_direction(), get_slider_right_analog(), get_slider_left_analog());
+	//printf("timer interrupt\n\r");
+	can_transmit((uint8_t)get_joystick_direction(), (uint8_t)get_slider_right_analog(), (uint8_t)get_slider_left_analog());
 	
 	// reset counter	
 	TCNT3 = 0;
@@ -58,7 +61,7 @@ ISR(TIMER3_COMPB_vect){
 void init_timer(){
 	config_timer();
 	ETIMSK = 0b00001000; // enable output compare interrupt for tc3 and oca
-	sei();
+	//sei();
 }
 
 void config_timer(){
@@ -75,7 +78,7 @@ void config_timer(){
 	TCCR3B = 0b00000101; // clock select clk/1024
 	
 	// output compare register
-	OCR3B = 488;
+	OCR3B = 4880;
 }
 
 // util from datasheet

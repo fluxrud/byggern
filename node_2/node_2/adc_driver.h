@@ -40,7 +40,7 @@ interrupt:
 
 void init_adc();
 
-static uint8_t adc_interrupt_flag = 0;
+static uint8_t adc_interrupt_flag;
 static uint16_t adc_interrupt_lth = 0xf0;
 void adc_interrupt_clear();
 

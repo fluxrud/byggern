@@ -10,6 +10,7 @@
 #define CAN_H_
 
 #include "mcp2515.h"
+#include "game.h"
 #include <stdlib.h>
 
 struct can_msg_t
@@ -32,14 +33,21 @@ ISR(INT0_vect){
 	} else if( ICOD == 6 ){
 		struct can_msg_t msg = can_read_rx_buf0();
 		display_can_frame(msg);
+		if (msg.id == 0x02){
+			goal();
+		}
 		mcp2515_bit_mod(MCP_CANINTF, 1, 0);
 	} else if( ICOD == 7 ){
 		struct can_msg_t msg = can_read_rx_buf0();
 		display_can_frame(msg);
 		mcp2515_bit_mod(MCP_CANINTF, 1 << 1, 0);
+	} else {
+		struct can_msg_t msg = can_read_rx_buf0();
+		//display_can_frame(msg);
 	}
 	
 	// clear int flag
+	mcp2515_bit_mod(MCP_CANINTF, 3, 0);
 	mcp2515_bit_mod(MCP_CANINTF, (1 << 2), 0); // clear tx buf 0 flag
 	set_bit(GIFR, 6);
 }
@@ -101,6 +109,7 @@ void init_can()
 	mcp2515_bit_mod(MCP_CNF1, 0xff, SJW + BRP);
 	mcp2515_bit_mod(MCP_CNF2, 0xff, BTLMOD + SAM + PHSEG1 + PRSEG);
 	mcp2515_bit_mod(MCP_CNF3, 0xff, SOF + WAKFIL + PHSEG2);
+	mcp2515_bit_mod(MCP_CANCTRL, 1 << 3, 1 << 3);
 	
 	can_set_config_mode(MODE_NORMAL);
 	
@@ -109,7 +118,7 @@ void init_can()
 	mcp2515_bit_mod(MCP_CANINTE, 1 << 5, 1 << 5);
 	mcp2515_bit_mod(MCP_RXB0CTRL, 0b11 << 5, 0b11 << 5);
 	
-	mcp2515_bit_mod(MCP_RXF0SIDL, 1 << 3, 1 << 3);
+	//mcp2515_bit_mod(MCP_RXF0SIDL, 1 << 3, 1 << 3);
 }
 
 void can_transmit_tx_buf0(struct can_msg_t msg)
@@ -183,7 +192,7 @@ void can_transmit(char joystick_dir, char slider_pos, char button_val){
 	msg.data[1] = slider_pos;
 	msg.data[2] = button_val;
 	can_transmit_tx_buf0(msg);
-	display_can_frame(msg);
+	//display_can_frame(msg);
 	free(msg.data);
 }
 

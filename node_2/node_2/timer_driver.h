@@ -10,6 +10,7 @@
 #define TIMER_DRIVER_H_
 
 #include "motor_driver.h"
+#include "adc_driver.h"
 
 void timer_config(uint8_t timer_num, uint16_t ms){
 	Tc* timer_base;
@@ -85,6 +86,29 @@ void TC1_Handler(){
 
 void TC2_Handler(){
 	printf("interrupt: tc2\n\r");
+	
+	printf("%d\n\r", adc_interrupt_flag);
+	struct can_message_t msg;
+	msg.id = 0x69;
+	msg.data_length = 1;
+	msg.data[0] = 0;
+	int ret = can_send(&msg, 0);
+	/*
+	if (adc_interrupt_flag == 1){
+		struct can_message_t msg;
+		msg.id = 0x02;
+		msg.data_length = 1;
+		msg.data[0] = adc_interrupt_flag;
+		int ret = can_send(&msg, 0);
+		adc_interrupt_flag = 0;
+	} else {
+		struct can_message_t msg;
+		msg.id = 0x02;
+		msg.data_length = 1;
+		msg.data[0] = adc_interrupt_flag;
+		int ret = can_send(&msg, 0);
+	}*/
+	//if (ret != 0) printf(" can tx mb busy");
 	
 	//servo_pos_us = ((servo_pos_us - 900 + 20) % 1200) + 900;
 	//printf("servopos: %d\n\r", servo_pos_us);

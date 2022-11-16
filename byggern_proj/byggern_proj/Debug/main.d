@@ -22,7 +22,8 @@ main.d main.o: .././main.c \
  .././pwm_gen.h .././adc.h .././joystick.h .././slider.h .././oled.h \
  .././fonts.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\pgmspace.h \
- .././oled_menu.h .././oled_shapes.h .././mcp2515.h .././spi.h .././can.h \
+ .././oled_menu.h .././oled_shapes.h .././game.h .././mcp2515.h \
+ .././spi.h .././can.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h \
  .././joystick_button.h .././timer_driver.h
 
@@ -87,6 +88,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 .././oled_menu.h:
 
 .././oled_shapes.h:
+
+.././game.h:
 
 .././mcp2515.h:
 

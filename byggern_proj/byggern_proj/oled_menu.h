@@ -12,9 +12,10 @@
 #include "oled.h"
 #include "oled_shapes.h"
 #include <string.h>
+#include "game.h"
 
 static char* oled_menu_items[] = {
-	"Menu item 1", 
+	"Start Game", 
 	"Menu item 2", 
 	"Menu item 3", 
 	"Menu item 4", 
@@ -77,6 +78,19 @@ void oled_menu_sel_up(){
 		sel_item = 0;
 	}
 	oled_menu_display();
+}
+
+void oled_menu_sel_right(){
+	if(sel_item == 0){
+		// start game
+		printf("SEL RIGHT\n\r");
+		game_has_started = 1;
+	}
+}
+
+void oled_menu_sel_left(){
+	printf("left");
+	game_has_started = 0;
 }
 
 #endif /* OLED_MENU_H_ */

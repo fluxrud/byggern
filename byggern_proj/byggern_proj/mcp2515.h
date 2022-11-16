@@ -157,6 +157,8 @@ Copyright 2003 Kimberly Otten Software Consulting
 #define MCP_MERRF		0x80
 // low level functions
 
+
+
 char mcp2515_read(char adr)
 {
 	SPI_set_slave_select();

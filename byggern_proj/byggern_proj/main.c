@@ -32,6 +32,8 @@
 
 #include "timer_driver.h"
 
+#include "game.h"
+
 void init_pin_directions()
 {
 	// set PORTB PIN0 direction as output
@@ -102,9 +104,9 @@ int main(void)
 	//mcp2515_reset();
 	//_delay_ms(1000);
 	
-	
+	//init_timer();
 	init_can();
-	init_timer();
+	
 	//can_set_config_mode(MODE_LOOPBACK);
 	
 	uint8_t slider_value = get_slider_right_analog();
@@ -132,34 +134,45 @@ int main(void)
 		//oled_fill_entire();
 		// display_adc_info(); // using printf
 		
-		/* OLED MENU */
-		oled_menu_display();
+		/* OLED */
+		if (game_has_started == 0){
+			oled_menu_display();
+		} else {
+			display_game();
+		}
 		
-		/* JOYSTICK TX 
+		
+		/* JOYSTICK TX */
 		switch (get_joystick_direction())
 		{
 			case DOWN:
 				oled_menu_sel_down();
-				can_transmit(0x1f, 1);
+				//can_transmit(0x1f, 1);
 				break;
 			case UP:
 				oled_menu_sel_up();
-				can_transmit(0x1f, 2);
+				//can_transmit(0x1f, 2);
 				break;
 			case RIGHT:
-				can_transmit(0x1f, 3);
+				oled_menu_sel_right();
+				init_oled();
+				//can_transmit(0x1f, 3);
 				break;
 			case LEFT:
-				can_transmit(0x1f, 4);
+				//can_transmit(0x1f, 4);
+				oled_menu_sel_left();
+				init_oled();
 				break;
 			default:
 				break;
 		}
 		
+		can_transmit((uint8_t)get_joystick_direction(), (uint8_t)get_slider_right_analog(), (uint8_t)get_slider_left_analog());
+		
 		/* RIGHT SLIDER TX */
 		uint8_t n_slider_value = get_slider_right_analog();
 		if (abs(slider_value - n_slider_value) > 5){
-			can_transmit(0x00, n_slider_value, 0x00);
+			//can_transmit(0x00, n_slider_value, 0x00);
 		}
 		slider_value = n_slider_value;
 		
@@ -174,7 +187,8 @@ int main(void)
 		oled_render();
 		
 		// read rx buffer
-		//struct can_msg_t msg = can_read_rx_buf0();
+		
+		//print_game();
 		//display_can_frame(msg);
 		
 		/* LOOP PERIOD AND LED */

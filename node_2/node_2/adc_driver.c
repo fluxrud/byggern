@@ -6,6 +6,7 @@
  */ 
 
 #include "adc_driver.h"
+#include "can_controller.h"
 
 void adc_config();
 
@@ -110,23 +111,29 @@ void adc_interrupt_clear(){
 	ADC->ADC_WPMR = ('A' << 24) + ('D' << 16) + ('C' << 8) + 0b0;
 	ADC->ADC_IER = 1 << 26;
 	ADC->ADC_WPMR = ('A' << 24) + ('D' << 16) + ('C' << 8) + 0b1;
-	adc_interrupt_flag = 0;
 }
 
 void adc_interrupt_disable(){
 	ADC->ADC_WPMR = ('A' << 24) + ('D' << 16) + ('C' << 8) + 0b0;
 	ADC->ADC_IDR = (0x1f << 24) + 0xffff;
 	ADC->ADC_WPMR = ('A' << 24) + ('D' << 16) + ('C' << 8) + 0b1;
-	adc_interrupt_flag = 1;
 }
 
 void ADC_Handler(void){
 	uint16_t adc_data = adc_read_lcdr(7);
 	printf("INTERRIPt, adc: %x\n\r", adc_data);
-	printf("is: %x\n\r", ADC->ADC_ISR);
-	
+	//printf("is: %x\n\r", ADC->ADC_ISR);
+	int dummy_read = ADC->ADC_ISR;
 	if(adc_data < adc_interrupt_lth){
+		printf("gaol!\n\r");
 		adc_interrupt_disable();
+		adc_interrupt_flag = 1;
+		struct can_message_t msg;
+		msg.id = 0x02;
+		msg.data_length = 1;
+		msg.data[0] = 1;
+		int ret = can_send(&msg, 0);
+		adc_interrupt_flag = 0;
 	}
 	
 	NVIC_ClearPendingIRQ(ID_ADC);
