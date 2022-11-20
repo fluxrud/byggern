@@ -32,14 +32,14 @@ ISR(INT0_vect){
 		mcp2515_bit_mod(MCP_CANINTF, 1 + (1 << 5), 0);
 	} else if( ICOD == 6 ){
 		struct can_msg_t msg = can_read_rx_buf0();
-		display_can_frame(msg);
+		//display_can_frame(msg);
 		if (msg.id == 0x02){
 			goal();
 		}
 		mcp2515_bit_mod(MCP_CANINTF, 1, 0);
 	} else if( ICOD == 7 ){
 		struct can_msg_t msg = can_read_rx_buf0();
-		display_can_frame(msg);
+		//display_can_frame(msg);
 		mcp2515_bit_mod(MCP_CANINTF, 1 << 1, 0);
 	} else {
 		struct can_msg_t msg = can_read_rx_buf0();

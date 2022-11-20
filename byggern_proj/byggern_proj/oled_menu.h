@@ -16,19 +16,13 @@
 
 static char* oled_menu_items[] = {
 	"Start Game", 
-	"Menu item 2", 
-	"Menu item 3", 
-	"Menu item 4", 
-	"Menu item 5", 
-	"Menu item 6", 
-	"Menu item 7",
-	"Menu item 8",
-	"Menu item 9",
-	"Menu item 10"
+	"Settings", 
+	"High scores"
 };
-static uint8_t n_items = 11;
+static uint8_t n_items = 4;
 static int top_item = 0;
 static int sel_item = 0;
+static int screen_size = 6;
 
 void draw_selected_arrow(uint8_t p)
 {
@@ -42,14 +36,15 @@ void draw_selected_arrow(uint8_t p)
 
 void oled_menu_display()
 {
-	for(uint8_t i = 0; i < 8; i++)
+	oled_fill_entire(0x00);
+	for(uint8_t i = 0; i < screen_size; i++)
 	{
 		char* s;
 		if (i + top_item < n_items - 1) s = oled_menu_items[i + top_item];
 		else						s = "----";
-		oled_write_string_on_line(s, strlen(s), i);
+		oled_write_string_on_line(s, strlen(s), i+1);
 	}
-	draw_selected_arrow(sel_item);
+	draw_selected_arrow(sel_item + 1);
 }
 
 void oled_menu_scroll_up(){
@@ -64,33 +59,31 @@ void oled_menu_scroll_down(){
 
 void oled_menu_sel_down(){
 	sel_item += 1;
-	if (sel_item > 7) {
+	if (sel_item > screen_size - 1) {
 		oled_menu_scroll_down();
-		sel_item = 7;
+		sel_item = screen_size - 1;
 	}
-	oled_menu_display();
+	//oled_menu_display();
 }
 
 void oled_menu_sel_up(){
 	sel_item += -1;
-	if (sel_item < 0) {
+	if (sel_item < 1) {
 		oled_menu_scroll_up();
 		sel_item = 0;
 	}
-	oled_menu_display();
+	//oled_menu_display();
 }
 
 void oled_menu_sel_right(){
 	if(sel_item == 0){
 		// start game
-		printf("SEL RIGHT\n\r");
-		game_has_started = 1;
+		//printf("SEL RIGHT\n\r");
 	}
 }
 
 void oled_menu_sel_left(){
-	printf("left");
-	game_has_started = 0;
+	//printf("left");
 }
 
 #endif /* OLED_MENU_H_ */

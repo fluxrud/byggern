@@ -11,11 +11,22 @@
 #include "avr/interrupt.h"
 #include "avr/io.h"
 #include "util/delay.h"
+#include "game.h"
+#include "oled_menu.h"
 
 
 ISR(INT2_vect){
-	//Interrupten skal triggre denne funksjonen
-	printf("klikk");
+	
+	init_oled(); // fix potential solenoid disturbance
+	
+	num_goals = 0;
+	if (sel_item == 0 && game_has_started == 0){
+		// start game
+		game_has_started = 1;
+	} else if (game_has_started == 1){
+		game_has_started = 0;
+	}
+	
 }
 
 void init_interrupt(){

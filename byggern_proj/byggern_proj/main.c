@@ -70,7 +70,7 @@ int main(void)
 	init_oled();
 	
 	//init_can();
-	//init_interrupt();
+	init_interrupt();
 	
 	
 	_delay_us(2); // the MCP takes a maximum of 2 us to be ready for a reset
@@ -132,7 +132,7 @@ int main(void)
 		//printf("\n%2x", mcp2515_read(0x0e));			// mpc read CANSTAT, should be 0x80, configuration mode
 		//oled_write_char((unsigned char)'a', 8);
 		//oled_fill_entire();
-		// display_adc_info(); // using printf
+		//display_adc_info(); // using printf
 		
 		/* OLED */
 		if (game_has_started == 0){
@@ -155,13 +155,11 @@ int main(void)
 				break;
 			case RIGHT:
 				oled_menu_sel_right();
-				init_oled();
 				//can_transmit(0x1f, 3);
 				break;
 			case LEFT:
 				//can_transmit(0x1f, 4);
 				oled_menu_sel_left();
-				init_oled();
 				break;
 			default:
 				break;
